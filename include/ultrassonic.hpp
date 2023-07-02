@@ -9,7 +9,7 @@
 
 namespace Ultrassonic{
 
-    int MaxLevel = 13;
+    const int MaxLevel = 13;
 
     void setup();
     /// @brief Measure water level based on MaxLevel.
