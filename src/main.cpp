@@ -1,5 +1,7 @@
 #include <Arduino.h>
 
+#include "ultrassonic.hpp"
+
 int count1 = 0;
 int count2 = 0;
 
