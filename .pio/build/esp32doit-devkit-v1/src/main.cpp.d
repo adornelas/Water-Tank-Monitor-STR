@@ -128,4 +128,5 @@
  /home/hiago/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/hal/include/hal/esp_flash_err.h \
  /home/hiago/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/spi_flash/include/esp_spi_flash.h \
  /home/hiago/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/spi_flash/include/esp_spi_flash_counters.h \
- /home/hiago/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/esp_hw_support/include/soc/esp32/spiram.h
+ /home/hiago/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/esp_hw_support/include/soc/esp32/spiram.h \
+ include/ultrassonic.hpp
