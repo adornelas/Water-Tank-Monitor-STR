@@ -40,26 +40,7 @@ namespace Ultrassonic {
         long t = pulseIn(echo, HIGH);
         int distance = t / 29 / 2;
 
-        return (MaxLevel - distance);
+        *water_level = (MaxLevel - distance);
     }
 
 }
-
-// #include <Arduino.h>
-
-// #include <freertos/semphr.h>
-// #include <freertos/task.h>
-// #define WAIT_TIME 2
-
-// SemaphoreHandle_t xMutex_Ultrassonic = NULL;
-
-// void le(){
-//   // tempo da ultima leitura do sensor
-//   static uint32_t last_time = 0; 
- 
-//   if( (millis() - last_time) >= WAIT_TIME)
-//   {
-//     last_time = millis();
-//     xSemaphoreGiveFromISR(xSemaphore_Pulso, (BaseType_t)(pdFALSE));
-//   }
-// }
