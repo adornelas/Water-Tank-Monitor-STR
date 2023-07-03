@@ -1,8 +1,11 @@
 #include <Arduino.h>
 
+#include "current.hpp"
 #include "ultrassonic.hpp"
 
 SemaphoreHandle_t xMutex_Var_Water = NULL;
+SemaphoreHandle_t xMutex_Var_Current;
+float CurrentValue;
 int WaterLevel;
 
 void setup() {
@@ -14,6 +17,7 @@ void setup() {
   {
     Serial.printf("\n\rFalha em criar o Mutex para variavel global");
   }
+  Current::setup();
   Ultrassonic::setup();
 
 }
