@@ -10,13 +10,13 @@
 
 namespace Ultrassonic{
 
-    extern SemaphoreHandle_t xMutex_Var;
+    extern SemaphoreHandle_t xMutex_Var_Water;
     extern int WaterLevel;
 
     const int MaxLevel = 13;
 
     void setup();
-    void Task_Measure(void *parameters);
+    void Task_Measure_Water(void *parameters);
     /// @brief Set the Global Variable Water Level
     /// @param water_level 
     void SetWaterLevel(int water_level);

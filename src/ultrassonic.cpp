@@ -2,7 +2,7 @@
 
 namespace Ultrassonic {
 
-    SemaphoreHandle_t xMutex_Var;
+    SemaphoreHandle_t xMutex_Var_Water;
     int WaterLevel;
 
     void setup() {
@@ -12,10 +12,10 @@ namespace Ultrassonic {
         int distance = t / 29 / 2;
 
         // Cria tarefa do sensor
-        xTaskCreate(Task_Measure, "Measure", configMINIMAL_STACK_SIZE * 2, NULL, tskIDLE_PRIORITY + 1, NULL);   
+        xTaskCreate(Task_Measure_Water, "Measure_Water", configMINIMAL_STACK_SIZE * 2, NULL, tskIDLE_PRIORITY + 1, NULL);   
     }
 
-    void Task_Measure(void *parameters){
+    void Task_Measure_Water(void *parameters){
         int water_level;
         // TODO: desabilitar interrupções para calculo correto do nível
         measureWaterLevel(&water_level);
@@ -25,10 +25,10 @@ namespace Ultrassonic {
     void SetWaterLevel(int water_level)
     {
         // Obtains the Global Variable Mutex
-        xSemaphoreTake(xMutex_Var,portMAX_DELAY );
+        xSemaphoreTake(xMutex_Var_Water,portMAX_DELAY );
         WaterLevel = water_level;
         // Releases the Global Variable Mutex
-        xSemaphoreGive(xMutex_Var);
+        xSemaphoreGive(xMutex_Var_Water);
     }
 
     void measureWaterLevel(int *water_level) {
