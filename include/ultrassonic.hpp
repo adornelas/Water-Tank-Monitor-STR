@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ULTRASSONIC_HPP
+#define ULTRASSONIC_HPP
 
 #include <Arduino.h>
 
@@ -23,3 +24,5 @@ namespace Ultrassonic{
     /// @param water_level pointer to water level variable.
     void measureWaterLevel(int *water_level);
 }
+
+#endif
