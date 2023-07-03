@@ -33,9 +33,9 @@ namespace Button{
 
     srcSystem_t GetButtonState(void);
     
-    static void IRAM_ATTR PushManualButton(void);
-    static void IRAM_ATTR PushAutomaticButton(void);
-    static void IRAM_ATTR PushStopButton(void);
+   void IRAM_ATTR PushManualButton(void);
+   void IRAM_ATTR PushAutomaticButton(void);
+   void IRAM_ATTR PushStopButton(void);
 
 }
 
@@ -96,7 +96,7 @@ void Button::SetStopButtom(int value){
     }
 }
 
-static void IRAM_ATTR PushManualButton(void){
+void IRAM_ATTR PushManualButton(void){
     static uint32_t last_time = 0;
 
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
@@ -108,7 +108,7 @@ static void IRAM_ATTR PushManualButton(void){
     }
 }
 
-static void IRAM_ATTR PushAutomaticButton(void){
+void IRAM_ATTR PushAutomaticButton(void){
     static uint32_t last_time = 0;
 
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
@@ -120,7 +120,7 @@ static void IRAM_ATTR PushAutomaticButton(void){
     }
 }
 
-static void IRAM_ATTR PushStopButton(void){
+void IRAM_ATTR PushStopButton(void){
     static uint32_t last_time = 0;
 
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
