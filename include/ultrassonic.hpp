@@ -9,6 +9,7 @@
 
 namespace Ultrassonic{
 
+    extern SemaphoreHandle_t xMutex_Var;
     extern int WaterLevel;
 
     const int MaxLevel = 13;
