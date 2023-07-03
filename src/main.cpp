@@ -15,7 +15,12 @@ void setup() {
   xMutex_Var_Water = xSemaphoreCreateMutex();
   if(xMutex_Var_Water == NULL)
   {
-    Serial.printf("\n\rFalha em criar o Mutex para variavel global");
+    Serial.printf("\n\rFalha em criar o Mutex para variavel global de nível de água");
+  }
+  xMutex_Var_MotorInfo = xSemaphoreCreateMutex();
+  if(xMutex_Var_MotorInfo == NULL)
+  {
+    Serial.printf("\n\rFalha em criar o Mutex para variavel global de informações do motor");
   }
   MotorSensing::setup();
   Ultrassonic::setup();
