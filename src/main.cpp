@@ -1,12 +1,12 @@
 #include <Arduino.h>
 
-#include "current.hpp"
+#include "motorsensing.hpp"
 #include "ultrassonic.hpp"
 
 SemaphoreHandle_t xMutex_Var_Water = NULL;
-SemaphoreHandle_t xMutex_Var_Current;
-float CurrentValue;
+SemaphoreHandle_t xMutex_Var_MotorInfo;
 int WaterLevel;
+MotorSensing::motorInfoStruct motorInfo;
 
 void setup() {
   Serial.begin(115200);
@@ -17,7 +17,7 @@ void setup() {
   {
     Serial.printf("\n\rFalha em criar o Mutex para variavel global");
   }
-  Current::setup();
+  MotorSensing::setup();
   Ultrassonic::setup();
 
 }
