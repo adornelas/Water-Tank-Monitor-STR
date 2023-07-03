@@ -3,9 +3,12 @@
 
 #include <Arduino.h>
 #include "ACS712.h"
+#include <DHT.h>
+#include <DHT_U.h>
 
 // ESP32 GPIOs
 #define CURRENT_GPIO 12
+#define TEMPERATURE_GPIO 13
 
 namespace MotorSensing{
 
