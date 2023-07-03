@@ -21,9 +21,11 @@ namespace Ultrassonic {
 
     void SetWaterLevel(int water_level)
     {
-        // Obtem o Mutex Variavel Global
+        // Obtains the Global Variable Mutex
+        xSemaphoreTake(xMutex_Var,portMAX_DELAY );
         WaterLevel = water_level;
-        // libera o Mutex Variavel Global
+        // Releases the Global Variable Mutex
+        xSemaphoreGive(xMutex_Var);
     }
 
     void measureWaterLevel(int *water_level) {
