@@ -2,6 +2,9 @@
 
 namespace Ultrassonic {
 
+    SemaphoreHandle_t xMutex_Var;
+    int WaterLevel;
+
     void setup() {
         pinMode(trig, OUTPUT);
         pinMode(echo, INPUT);
