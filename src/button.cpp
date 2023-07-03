@@ -1,6 +1,10 @@
 #ifndef Button_h
 #define Button_h
+
 #define DEBOUNCE_BUTTON 300
+#define MANUAL_MODE "M"
+#define AUTOMATIC_MODE "A"
+#define STOP_MODE "S"
 
 #include <Arduino.h>
 
@@ -10,19 +14,24 @@ static SemaphoreHandle_t xSemaphore_AutomaticButton = NULL;
 static SemaphoreHandle_t xSemaphore_StopButton = NULL;
 static SemaphoreHandle_t xMutex_SystemState = NULL;
 
+typedef struct{
+    const char* State;
+    uint8_t timesPressed;
+} srcSystem_t;
+
 namespace Button{
     static int pinManualButton;
     static int pinAutomaticButton;
     static int pinStopButton;
 
-    static unsigned char SystemState;
+    static srcSystem_t SystemState;
 
     void setup(void);
     void SetManualButtom(int value);
     void SetAutomaticButtom(int value);
     void SetStopButtom(int value);
 
-    unsigned char GetButtonState(void);
+    srcSystem_t GetButtonState(void);
     
     static void IRAM_ATTR PushManualButton(void);
     static void IRAM_ATTR PushAutomaticButton(void);
@@ -35,6 +44,13 @@ void Button::setup(void){
     if(xMutex_SystemState == NULL){
         Serial.printf("\n\rFalha em criar o Mutex para o botão desejado");
     }
+
+    xSemaphoreTake(xMutex_SystemState,portMAX_DELAY);
+
+    SystemState.State = STOP_MODE;
+    SystemState.timesPressed = 0;
+
+    xSemaphoreGive(xMutex_SystemState);
 }
 
 void Button::SetManualButtom(int value){
@@ -116,14 +132,20 @@ static void IRAM_ATTR PushStopButton(void){
     }
 }
 
-unsigned char Button::GetButtonState(void){
-    unsigned char retState;
+srcSystem_t Button::GetButtonState(void){
+    srcSystem_t retState;
 
     if(xSemaphoreTake(xSemaphore_ManualButton,portMAX_DELAY) == pdTRUE){
         xSemaphoreTake(xMutex_SystemState,portMAX_DELAY);
 
-        SystemState = 'M';
-        retState = SystemState;
+        if(SystemState.State != MANUAL_MODE)
+            SystemState.timesPressed = 0;
+        else
+            SystemState.timesPressed++;
+        
+        SystemState.State = MANUAL_MODE;
+        retState.State = SystemState.State;
+        retState.timesPressed = SystemState.timesPressed;
 
         xSemaphoreGive(xMutex_SystemState);
     }
@@ -131,8 +153,14 @@ unsigned char Button::GetButtonState(void){
     if(xSemaphoreTake(xSemaphore_AutomaticButton,portMAX_DELAY) == pdTRUE){
         xSemaphoreTake(xMutex_SystemState,portMAX_DELAY);
 
-        SystemState = 'A';
-        retState = SystemState;
+        if(SystemState.State != AUTOMATIC_MODE)
+            SystemState.timesPressed = 0;
+        else
+            SystemState.timesPressed++;
+        
+        SystemState.State = AUTOMATIC_MODE;
+        retState.State = SystemState.State;
+        retState.timesPressed = SystemState.timesPressed;
 
         xSemaphoreGive(xMutex_SystemState);
     }
@@ -140,8 +168,14 @@ unsigned char Button::GetButtonState(void){
     if(xSemaphoreTake(xSemaphore_StopButton,portMAX_DELAY) == pdTRUE){
         xSemaphoreTake(xMutex_SystemState,portMAX_DELAY);
 
-        SystemState = 'S';
-        retState = SystemState;
+        if(SystemState.State != STOP_MODE)
+            SystemState.timesPressed = 0;
+        else
+            SystemState.timesPressed++;
+        
+        SystemState.State = STOP_MODE;
+        retState.State = SystemState.State;
+        retState.timesPressed = SystemState.timesPressed;
 
         xSemaphoreGive(xMutex_SystemState);
     }
