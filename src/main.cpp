@@ -2,6 +2,8 @@
 
 #include "ultrassonic.hpp"
 
+int WaterLevel;
+
 void setup() {
   Serial.begin(115200);
   Serial.printf("\n\rSistema de Monitoramento de Reservatório\n\r");
