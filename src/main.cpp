@@ -14,6 +14,8 @@ void setup() {
   {
     Serial.printf("\n\rFalha em criar o Mutex para variavel global");
   }
+  Ultrassonic::setup();
+
 }
 
 void loop() {
