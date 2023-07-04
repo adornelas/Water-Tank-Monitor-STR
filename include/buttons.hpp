@@ -1,7 +1,7 @@
 #ifndef BUTTONS_HPP
 #define BUTTONS_HPP
 
-#define DEBOUNCE_BUTTON 300
+#define DEBOUNCE_BUTTON 50
 #define MANUAL_MODE "M"
 #define AUTOMATIC_MODE "A"
 #define STOP_MODE "S"
