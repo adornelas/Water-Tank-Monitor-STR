@@ -14,6 +14,8 @@ SemaphoreHandle_t xMutex_SystemState = NULL;
 
 int WaterLevel;
 MotorSensing::motorInfoStruct motorInfo;
+srcSystem SystemState;
+
 
 MotorSensing::motorInfoStruct GetMotorInfoValue()
 {
@@ -45,9 +47,9 @@ void Task_Pump(void *parameters){
   while(1)
   {
     Serial.println(F("Começou task_pump"));
-    // stateBuffer = Button::GetButtonState();
+    stateBuffer = Button::GetState();
     Serial.println(F("pegou state"));    
-    // Serial.println(stateBuffer.State);
+    Serial.println(stateBuffer.State);
     // Le os dados das informações do motor
     // motor_info = GetMotorInfoValue();
     // water__level = GetWaterLevel();
@@ -76,16 +78,21 @@ void setup() {
   {
     Serial.printf("\n\rFalha em criar o Mutex para variavel global de informações do motor");
   }
+  xMutex_SystemState = xSemaphoreCreateMutex();
+  if(xMutex_SystemState == NULL){
+      Serial.printf("\n\rFalha em criar o Mutex para o botão desejado");
+  }
+
   MotorSensing::setup();
   Ultrassonic::setup();
-  xTaskCreate(Ultrassonic::Task_Measure_Water, "Measure_Water", configMINIMAL_STACK_SIZE * 2, NULL, tskIDLE_PRIORITY + 1, NULL);   
-  xTaskCreate(MotorSensing::Task_MeasureMotor, "Measure_Current", configMINIMAL_STACK_SIZE * 2, NULL, tskIDLE_PRIORITY + 2, NULL);   
-  xTaskCreate(Task_Pump, "Pump", configMINIMAL_STACK_SIZE * 2, NULL, tskIDLE_PRIORITY + 3, NULL);   
-
   Button::setup();
+  xTaskCreate(Ultrassonic::Task_Measure_Water, "Measure_Water", configMINIMAL_STACK_SIZE * 2, NULL, tskIDLE_PRIORITY + 3, NULL);   
+  xTaskCreate(MotorSensing::Task_MeasureMotor, "Measure_MotorInfo", configMINIMAL_STACK_SIZE * 2, NULL, tskIDLE_PRIORITY + 2, NULL);   
+  xTaskCreate(Task_Pump, "Pump", configMINIMAL_STACK_SIZE * 2, NULL, tskIDLE_PRIORITY + 1, NULL);
+  xTaskCreate(Button::Task_HandleButtons, "Handle_Buttons", configMINIMAL_STACK_SIZE * 2, NULL, tskIDLE_PRIORITY + 4, NULL);   
+
 
   pinMode(RELAY_PIN, OUTPUT);
-  // xTaskCreate(Task_Pump, "Measure_Current", configMINIMAL_STACK_SIZE * 2, NULL, tskIDLE_PRIORITY + 1, NULL);   
   digitalWrite(RELAY_PIN, HIGH);
 
 }
