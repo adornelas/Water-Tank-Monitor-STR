@@ -118,7 +118,7 @@ namespace Button{
         return system_state;
     }
 
-    void Task_HandleButtons(void *parameter)
+    void Task_HandleManual(void *parameter)
     {
         srcSystem system_state;
         srcSystem system_state_write;
@@ -135,7 +135,16 @@ namespace Button{
                 system_state_write.State = MANUAL_MODE;
                 SetState(system_state_write);
             }
+        }
+        
+    }
 
+    void Task_HandleAutomatic(void *parameter)
+    {
+        srcSystem system_state;
+        srcSystem system_state_write;
+        while (1)
+        {
             if(xSemaphoreTake(xSemaphore_AutomaticButton,portMAX_DELAY) == pdTRUE){
                 system_state = GetState();
 
@@ -148,6 +157,16 @@ namespace Button{
                 SetState(system_state_write);
             }
 
+        }
+        
+    }
+
+    void Task_HandleStop(void *parameter)
+    {
+        srcSystem system_state;
+        srcSystem system_state_write;
+        while (1)
+        {
             if(xSemaphoreTake(xSemaphore_StopButton,portMAX_DELAY) == pdTRUE){
                 system_state = GetState();
 
