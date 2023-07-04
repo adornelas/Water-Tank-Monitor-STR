@@ -14,24 +14,24 @@ static SemaphoreHandle_t xSemaphore_AutomaticButton = NULL;
 static SemaphoreHandle_t xSemaphore_StopButton = NULL;
 static SemaphoreHandle_t xMutex_SystemState = NULL;
 
-typedef struct{
+struct srcSystem{
     const char* State;
     uint8_t timesPressed;
-} srcSystem_t;
+};
 
 namespace Button{
     static int pinManualButton;
     static int pinAutomaticButton;
     static int pinStopButton;
 
-    static srcSystem_t SystemState;
+    static srcSystem SystemState;
 
     void setup(void);
     void SetManualButtom(int value);
     void SetAutomaticButtom(int value);
     void SetStopButtom(int value);
 
-    srcSystem_t GetButtonState(void);
+    srcSystem GetButtonState(void);
     
    void IRAM_ATTR PushManualButton(void);
    void IRAM_ATTR PushAutomaticButton(void);
@@ -58,7 +58,7 @@ void Button::SetManualButtom(int value){
 
     pinMode(pinManualButton, INPUT);
     attachInterrupt(digitalPinToInterrupt(pinManualButton), 
-                    Button::PushManualButton, 
+                    PushManualButton, 
                     RISING);
 
     vSemaphoreCreateBinary(xSemaphore_ManualButton);
@@ -73,7 +73,7 @@ void Button::SetAutomaticButtom(int value){
 
     pinMode(pinAutomaticButton, INPUT);
     attachInterrupt(digitalPinToInterrupt(pinAutomaticButton), 
-                    Button::PushAutomaticButton, 
+                    PushAutomaticButton, 
                     RISING);
 
     vSemaphoreCreateBinary(xSemaphore_AutomaticButton);
@@ -87,7 +87,7 @@ void Button::SetStopButtom(int value){
 
     pinMode(pinStopButton, INPUT);
     attachInterrupt(digitalPinToInterrupt(pinStopButton), 
-                    Button::PushStopButton, 
+                    PushStopButton, 
                     RISING);
 
     vSemaphoreCreateBinary(xSemaphore_StopButton);
@@ -96,7 +96,7 @@ void Button::SetStopButtom(int value){
     }
 }
 
-void IRAM_ATTR PushManualButton(void){
+void IRAM_ATTR Button::PushManualButton(void){
     static uint32_t last_time = 0;
 
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
@@ -108,7 +108,7 @@ void IRAM_ATTR PushManualButton(void){
     }
 }
 
-void IRAM_ATTR PushAutomaticButton(void){
+void IRAM_ATTR Button::PushAutomaticButton(void){
     static uint32_t last_time = 0;
 
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
@@ -120,7 +120,7 @@ void IRAM_ATTR PushAutomaticButton(void){
     }
 }
 
-void IRAM_ATTR PushStopButton(void){
+void IRAM_ATTR Button::PushStopButton(void){
     static uint32_t last_time = 0;
 
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
@@ -132,8 +132,8 @@ void IRAM_ATTR PushStopButton(void){
     }
 }
 
-srcSystem_t Button::GetButtonState(void){
-    srcSystem_t retState;
+srcSystem Button::GetButtonState(void){
+    srcSystem retState;
 
     if(xSemaphoreTake(xSemaphore_ManualButton,portMAX_DELAY) == pdTRUE){
         xSemaphoreTake(xMutex_SystemState,portMAX_DELAY);
