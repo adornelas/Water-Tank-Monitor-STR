@@ -3,10 +3,15 @@
 #include "motorsensing.hpp"
 #include "ultrassonic.hpp"
 #include "pins.h"
-// #include "button.hpp"
+#include "buttons.hpp"
 
 SemaphoreHandle_t xMutex_Var_Water =  NULL;
 SemaphoreHandle_t xMutex_Var_MotorInfo = NULL;
+SemaphoreHandle_t xSemaphore_ManualButton = NULL;
+SemaphoreHandle_t xSemaphore_AutomaticButton = NULL;
+SemaphoreHandle_t xSemaphore_StopButton = NULL;
+SemaphoreHandle_t xMutex_SystemState = NULL;
+
 int WaterLevel;
 MotorSensing::motorInfoStruct motorInfo;
 
@@ -34,19 +39,24 @@ int GetWaterLevel()
 }
 
 void Task_Pump(void *parameters){
-  MotorSensing::motorInfoStruct motor_info;
-  int water__level;
-  // srcSystem stateBuffer;
-  while(1){
+  // MotorSensing::motorInfoStruct motor_info;
+  // int water__level;
+  srcSystem stateBuffer;
+  while(1)
+  {
+    Serial.println(F("Começou task_pump"));
     // stateBuffer = Button::GetButtonState();
-    
-    // printf(stateBuffer.State);
+    Serial.println(F("pegou state"));    
+    // Serial.println(stateBuffer.State);
     // Le os dados das informações do motor
-    motor_info = GetMotorInfoValue();
-    water__level = GetWaterLevel();
-    Serial.println(water__level);
+    // motor_info = GetMotorInfoValue();
+    // water__level = GetWaterLevel();
+    // Serial.println(water__level);
     // Aciona o motor de acordo com o modo de funcionamento
-    // 
+    //
+    vTaskDelay(2000/portTICK_PERIOD_MS);
+    digitalWrite(RELAY_PIN, LOW);
+
   }
   
 }
@@ -70,16 +80,13 @@ void setup() {
   Ultrassonic::setup();
   xTaskCreate(Ultrassonic::Task_Measure_Water, "Measure_Water", configMINIMAL_STACK_SIZE * 2, NULL, tskIDLE_PRIORITY + 1, NULL);   
   xTaskCreate(MotorSensing::Task_MeasureMotor, "Measure_Current", configMINIMAL_STACK_SIZE * 2, NULL, tskIDLE_PRIORITY + 2, NULL);   
+  xTaskCreate(Task_Pump, "Pump", configMINIMAL_STACK_SIZE * 2, NULL, tskIDLE_PRIORITY + 3, NULL);   
 
-  // Button::setup();
+  Button::setup();
 
-  // Button::SetManualButtom(MANUAL_BUTTON);
-  // Button::SetAutomaticButtom(AUTOMATIC_BUTTON);
-  // Button::SetStopButtom(STOP_BUTTON);
-
-  // pinMode(RELAY_PIN, OUTPUT);
+  pinMode(RELAY_PIN, OUTPUT);
   // xTaskCreate(Task_Pump, "Measure_Current", configMINIMAL_STACK_SIZE * 2, NULL, tskIDLE_PRIORITY + 1, NULL);   
-  // digitalWrite(RELAY_PIN, LOW);
+  digitalWrite(RELAY_PIN, HIGH);
 
 }
 
