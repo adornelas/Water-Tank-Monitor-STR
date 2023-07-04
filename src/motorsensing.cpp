@@ -57,17 +57,14 @@ namespace MotorSensing {
         }
         motor_info->current = I;
     }
-
-    
-    void getMotorInfo(float *current_value, float *temperatura_value)
+   
+    motorInfoStruct getMotorInfoValue()
     {
-        // Obtains the Global Variable Mutex
+        motorInfoStruct motor_info;
         xSemaphoreTake(xMutex_Var_MotorInfo,portMAX_DELAY );
-        *current_value = motorInfo.current;
-        *temperatura_value = motorInfo.temperature;
-        // Serial.println(F("T:atribuiu"));
-        // Releases the Global Variable Mutex
+        motor_info = motorInfo;
         xSemaphoreGive(xMutex_Var_MotorInfo);
+        return motor_info;
     }
 
 }

@@ -70,10 +70,13 @@ void Upload_Status(void *parameters){
   float current = 0;
   float temperature = 0;
   int level = 0;
+  MotorSensing::motorInfoStruct motor_info;
+  int water_level;
 
   while(1){
-    Ultrassonic::getWaterLevel(&level);
-    MotorSensing::getMotorInfo(&current, &temperature);
+    water_level = GetWaterLevel();
+
+    motor_info =  MotorSensing::getMotorInfoValue();
 
     // Serial.print(F("CONNECTION:"));
     // Serial.print(F("level:"));
@@ -87,10 +90,10 @@ void Upload_Status(void *parameters){
     // Serial.println(current);
 
     if(WiFi.status() == WL_CONNECTED){
-      Connection::uploadInfos(&current, &temperature, &level);
+      Connection::uploadInfos(&motor_info.current, &motor_info.temperature, &water_level);
     }
 
-    vTaskDelay(1000*SEND_INTERVAL_TIME/portTICK_PERIOD_MS);
+    vTaskDelay(2000*SEND_INTERVAL_TIME/portTICK_PERIOD_MS);
   }
   
 }

@@ -29,9 +29,7 @@ namespace MotorSensing{
     /// @param motor_info pointer to the struct of motor info
     void measureMotor(motorInfoStruct *motor_info);
 
-    /// @brief Measure Motor's electric current value and temperature
-    /// @param motor_info pointer to the struct of motor info
-    void getMotorInfo(float *current_value, float *temperatura_value);
+    motorInfoStruct getMotorInfoValue();
 }
 
 #endif

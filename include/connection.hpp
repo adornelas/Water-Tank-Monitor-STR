@@ -5,6 +5,8 @@
 #include <WiFiClientSecure.h>
 
 #include <HTTPClient.h>
+#include "ultrassonic.hpp"
+#include "motorsensing.hpp"
 
 #define SEND_INTERVAL_TIME 500000 // segundos... Coloquei alto pra não ficar usando a cota gratuita lá kkk
 
