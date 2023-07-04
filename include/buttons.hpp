@@ -1,7 +1,7 @@
 #ifndef BUTTONS_HPP
 #define BUTTONS_HPP
 
-#define DEBOUNCE_BUTTON 50
+#define DEBOUNCE_BUTTON 500
 #define MANUAL_MODE "M"
 #define AUTOMATIC_MODE "A"
 #define STOP_MODE "S"
@@ -27,7 +27,9 @@ namespace Button{
     void SetManualButton(int pin);
     void SetAutomaticButton(int pin);
     void SetStopButton(int pin);
-    void Task_HandleButtons(void *parameter);
+    void Task_HandleManual(void *parameter);
+    void Task_HandleAutomatic(void *parameter);
+    void Task_HandleStop(void *parameter);
     void SetState(srcSystem system_state);
     srcSystem GetState(void);
 }
