@@ -20,13 +20,15 @@ namespace MotorSensing {
         while (1)
         {
             // TODO: desabilitar interrupções para calculo correto dos valores
-            Serial.println(F("T:Medindo a temperatura"));
+            // Serial.println(F("T:Medindo a temperatura"));
             measureMotor(&motor_info);
-            Serial.print(F("T:mediu "));
+            // Serial.print(F("T:mediu "));
             Serial.println(motor_info.temperature);
+            Serial.print(F("T:Medindo a corrente:"));
+            Serial.println(motor_info.current);
             SetMotorInfoValue(motor_info.current, motor_info.temperature);
-            Serial.println(F("T:setou, Delay"));
-            Serial.println(F("T:Final da task measure tempertture"));
+            // Serial.println(F("T:setou, Delay"));
+            // Serial.println(F("T:Final da task measure tempertture"));
             vTaskDelay(1000/portTICK_PERIOD_MS);
         }
     }
@@ -37,7 +39,7 @@ namespace MotorSensing {
         xSemaphoreTake(xMutex_Var_MotorInfo,portMAX_DELAY );
         motorInfo.current = current_value;
         motorInfo.temperature = temperatura_value;
-        Serial.println(F("T:atribuiu"));
+        // Serial.println(F("T:atribuiu"));
         // Releases the Global Variable Mutex
         xSemaphoreGive(xMutex_Var_MotorInfo);
     }
