@@ -124,9 +124,7 @@ namespace Button{
         srcSystem system_state_write;
         while (1)
         {
-            Serial.println(F("Chegou antes do if"));
             if(xSemaphoreTake(xSemaphore_ManualButton,portMAX_DELAY) == pdTRUE){
-                Serial.println(F("Chegou 1"));
                 system_state = GetState();
 
                 if(system_state.State != MANUAL_MODE)
@@ -136,11 +134,7 @@ namespace Button{
                 
                 system_state_write.State = MANUAL_MODE;
                 SetState(system_state_write);
-
-                Serial.println(F("Chegou 3"));
-
             }
-            Serial.println(F("\tChegou fora do if"));
 
             if(xSemaphoreTake(xSemaphore_AutomaticButton,portMAX_DELAY) == pdTRUE){
                 system_state = GetState();
