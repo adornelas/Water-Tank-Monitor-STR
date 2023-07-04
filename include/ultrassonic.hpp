@@ -9,7 +9,7 @@ namespace Ultrassonic{
 
     extern int WaterLevel;
 
-    const int MaxLevel = 13;
+    const int MaxLevel = 15;
 
     void setup();
     void Task_Measure_Water(void *parameters);
