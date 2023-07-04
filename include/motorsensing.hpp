@@ -3,12 +3,11 @@
 
 #include <Arduino.h>
 #include "ACS712.h"
+#include "pins.h"
 #include <DHT.h>
 #include <DHT_U.h>
 
-// ESP32 GPIOs
-#define CURRENT_GPIO 12
-#define TEMPERATURE_GPIO 13
+extern SemaphoreHandle_t xMutex_Var_MotorInfo;
 
 namespace MotorSensing{
 
@@ -18,8 +17,6 @@ namespace MotorSensing{
     };
 
     extern struct motorInfoStruct motorInfo;
-
-    extern SemaphoreHandle_t xMutex_Var_MotorInfo;
 
     void setup();
     void Task_MeasureMotor(void *parameters);

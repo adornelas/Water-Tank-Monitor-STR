@@ -1,15 +1,12 @@
 #pragma once
 
 #include <Arduino.h>
+#include "pins.h"
 
-// ESP32 GPIOs
-#define trig 12
-#define echo 13
-
+extern SemaphoreHandle_t xMutex_Var_Water;
 
 namespace Ultrassonic{
 
-    extern SemaphoreHandle_t xMutex_Var_Water;
     extern int WaterLevel;
 
     const int MaxLevel = 13;
