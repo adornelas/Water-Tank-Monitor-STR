@@ -4,9 +4,8 @@
 #define RELAY_PIN 19
 
 #define MANUAL_BUTTON 35
-#define STOP_BUTTON 4
+#define STOP_BUTTON 34
 #define AUTOMATIC_BUTTON 32
-
 
 #define CURRENT_GPIO 36
 #define TEMPERATURE_GPIO 21
