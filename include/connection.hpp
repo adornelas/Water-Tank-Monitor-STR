@@ -6,7 +6,7 @@
 
 #include <HTTPClient.h>
 
-#define SEND_INTERVAL_TIME 5 // segundos
+#define SEND_INTERVAL_TIME 500000 // segundos... Coloquei alto pra não ficar usando a cota gratuita lá kkk
 
 // Replace with your network credentials
 extern const char* ssid;
