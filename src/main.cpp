@@ -48,8 +48,11 @@ void Task_Pump(void *parameters){
   {
     Serial.println(F("Começou task_pump"));
     stateBuffer = Button::GetState();
-    Serial.println(F("pegou state"));    
-    Serial.println(stateBuffer.State);
+    Serial.print(F("     Pegou state: "));    
+    Serial.print(stateBuffer.State);
+    Serial.println(stateBuffer.timesPressed);
+    // Serial.print(F("               LEU BOTÃO::"));    
+    // Serial.println(digitalRead(32));
     // Le os dados das informações do motor
     // motor_info = GetMotorInfoValue();
     // water__level = GetWaterLevel();
