@@ -1,7 +1,7 @@
 #ifndef PINS_H
 #define PINS_H
 
-#define RELAY_PIN 19
+#define RELAY_PIN 5
 
 #define MANUAL_BUTTON 35
 #define STOP_BUTTON 34
