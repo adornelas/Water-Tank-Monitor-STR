@@ -24,7 +24,7 @@ namespace MotorSensing {
             measureMotor(&motor_info);
             // Serial.print(F("T:mediu "));
             Serial.println(motor_info.temperature);
-            Serial.print(F("T:Medindo a corrente:"));
+            // Serial.print(F("T:Medindo a corrente:"));
             Serial.println(motor_info.current);
             SetMotorInfoValue(motor_info.current, motor_info.temperature);
             // Serial.println(F("T:setou, Delay"));
@@ -56,6 +56,18 @@ namespace MotorSensing {
             motor_info->temperature = t;
         }
         motor_info->current = I;
+    }
+
+    
+    void getMotorInfo(float *current_value, float *temperatura_value)
+    {
+        // Obtains the Global Variable Mutex
+        xSemaphoreTake(xMutex_Var_MotorInfo,portMAX_DELAY );
+        *current_value = motorInfo.current;
+        *temperatura_value = motorInfo.temperature;
+        // Serial.println(F("T:atribuiu"));
+        // Releases the Global Variable Mutex
+        xSemaphoreGive(xMutex_Var_MotorInfo);
     }
 
 }

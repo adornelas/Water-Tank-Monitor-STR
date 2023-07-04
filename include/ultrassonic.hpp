@@ -19,4 +19,7 @@ namespace Ultrassonic{
     /// @brief Measure water level based on MaxLevel.
     /// @param water_level pointer to water level variable.
     void measureWaterLevel(int *water_level);
+    /// @brief Measure water level based on MaxLevel.
+    /// @param water_level pointer to water level variable.
+    void getWaterLevel(int *water_level);
 }

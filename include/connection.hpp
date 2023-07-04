@@ -6,7 +6,7 @@
 
 #include <HTTPClient.h>
 
-#define SEND_INTERVAL_TIME 120 // 2 minutos
+#define SEND_INTERVAL_TIME 5 // segundos
 
 // Replace with your network credentials
 extern const char* ssid;
@@ -23,8 +23,8 @@ namespace Connection{
     extern WiFiClientSecure client;
 
     void setup(void);
-    void uploadInfos(float current, 
-                    float temperature,
-                    int level);
+    void uploadInfos(float *current, 
+                    float *temperature,
+                    int *level);
 
 }
