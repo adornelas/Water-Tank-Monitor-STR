@@ -30,7 +30,7 @@ void IRAM_ATTR PushAutomaticButton(void){
 void IRAM_ATTR PushStopButton(void){
     static uint32_t last_time = 0;
 
-    xHigherPriorityTaskWoken - pdFALSE;
+    xHigherPriorityTaskWoken = pdFALSE;
 
     // Algoritmo de debounce do botão
     if( (millis() - last_time) >= DEBOUNCE_BUTTON){
