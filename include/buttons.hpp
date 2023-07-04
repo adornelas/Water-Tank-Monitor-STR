@@ -21,15 +21,15 @@ struct srcSystem{
 
 namespace Button{
 
-    static srcSystem SystemState;
+    extern srcSystem SystemState;
 
     void setup(void);
-    void SetManualButtom(int pin);
-    void SetAutomaticButtom(int pin);
-    void SetStopButtom(int pin);
-    void Task_Buttons(void *parameter);
-
-    srcSystem GetButtonState(void);
+    void SetManualButton(int pin);
+    void SetAutomaticButton(int pin);
+    void SetStopButton(int pin);
+    void Task_HandleButtons(void *parameter);
+    void SetState(srcSystem system_state);
+    srcSystem GetState(void);
 }
 
 

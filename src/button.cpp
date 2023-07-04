@@ -1,68 +1,67 @@
 #include "buttons.hpp"
 #include "pins.h"
 
+BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 
 void IRAM_ATTR PushManualButton(void){
     static uint32_t last_time = 0;
 
-    // BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+    xHigherPriorityTaskWoken = pdFALSE;
 
     // Algoritmo de debounce do botão
     if( (millis() - last_time) >= DEBOUNCE_BUTTON){
         last_time = millis();
-        // xSemaphoreGiveFromISR(xSemaphore_ManualButton, (BaseType_t)(pdFALSE));
-        xSemaphoreGiveFromISR(xSemaphore_ManualButton, NULL);
+        xSemaphoreGiveFromISR(xSemaphore_ManualButton, &xHigherPriorityTaskWoken);
     }
 }
 
 void IRAM_ATTR PushAutomaticButton(void){
     static uint32_t last_time = 0;
 
-    // BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+    xHigherPriorityTaskWoken = pdFALSE;
 
     // Algoritmo de debounce do botão
     if( (millis() - last_time) >= DEBOUNCE_BUTTON){
         last_time = millis();
-        xSemaphoreGiveFromISR(xSemaphore_AutomaticButton, NULL);
-        // xSemaphoreGiveFromISR(xSemaphore_AutomaticButton, (BaseType_t)(pdFALSE));
+        xSemaphoreGiveFromISR(xSemaphore_AutomaticButton, &xHigherPriorityTaskWoken);
     }
 }
 
 void IRAM_ATTR PushStopButton(void){
     static uint32_t last_time = 0;
 
-    // BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+    xHigherPriorityTaskWoken - pdFALSE;
 
     // Algoritmo de debounce do botão
     if( (millis() - last_time) >= DEBOUNCE_BUTTON){
         last_time = millis();
-        // xSemaphoreGiveFromISR(xSemaphore_StopButton, (BaseType_t)(pdFALSE));
-        xSemaphoreGiveFromISR(xSemaphore_StopButton, NULL);
+        xSemaphoreGiveFromISR(xSemaphore_StopButton, &xHigherPriorityTaskWoken);
     }
 }
 
 namespace Button{
-    static srcSystem system_state;
+
+    srcSystem SystemState;
 
     void setup(void)
     {
+        srcSystem system_state;
+
         xMutex_SystemState = xSemaphoreCreateMutex();
         if(xMutex_SystemState == NULL){
             Serial.printf("\n\rFalha em criar o Mutex para o botão desejado");
         }
 
-        xSemaphoreTake(xMutex_SystemState,portMAX_DELAY);
-
         system_state.State = STOP_MODE;
         system_state.timesPressed = 0;
+        SetState(system_state);
 
-        xSemaphoreGive(xMutex_SystemState);
-        SetManualButtom(MANUAL_BUTTON);
-        SetAutomaticButtom(AUTOMATIC_BUTTON);
-        SetStopButtom(STOP_BUTTON);
+        SetManualButton(MANUAL_BUTTON);
+        SetAutomaticButton(AUTOMATIC_BUTTON);
+        SetStopButton(STOP_BUTTON);
     }
 
-    void SetManualButtom(int pin){
+    void SetManualButton(int pin){
         pinMode(pin, INPUT);
         attachInterrupt(pin, 
                         PushManualButton, 
@@ -76,7 +75,7 @@ namespace Button{
         xSemaphoreTake(xSemaphore_ManualButton,(TickType_t)100);
     }
 
-    void SetAutomaticButtom(int pin){
+    void SetAutomaticButton(int pin){
         pinMode(pin, INPUT);
         attachInterrupt(pin, 
                         PushAutomaticButton, 
@@ -89,7 +88,7 @@ namespace Button{
         xSemaphoreTake(xSemaphore_AutomaticButton,(TickType_t)100);
     }
 
-    void SetStopButtom(int pin){
+    void SetStopButton(int pin){
         pinMode(pin, INPUT);
         attachInterrupt(pin, 
                         PushStopButton, 
@@ -102,121 +101,74 @@ namespace Button{
         xSemaphoreTake(xSemaphore_StopButton,(TickType_t)100);
     }
 
+    void SetState(srcSystem system_state){
+        xSemaphoreTake(xMutex_SystemState,portMAX_DELAY );
+        SystemState = system_state;
+        // Serial.println(F("T:atribuiu"));
+        xSemaphoreGive(xMutex_SystemState);
+    }
 
-    void Task_Buttons(void *parameter)
+    srcSystem GetState(void)
     {
-        srcSystem retState;
+        srcSystem system_state;
+
+        xSemaphoreTake(xMutex_SystemState,portMAX_DELAY );
+        system_state = SystemState;
+        xSemaphoreGive(xMutex_SystemState);
+        return system_state;
+    }
+
+    void Task_HandleButtons(void *parameter)
+    {
+        srcSystem system_state;
+        srcSystem system_state_write;
         while (1)
         {
             Serial.println(F("Chegou antes do if"));
             if(xSemaphoreTake(xSemaphore_ManualButton,portMAX_DELAY) == pdTRUE){
                 Serial.println(F("Chegou 1"));
-                xSemaphoreTake(xMutex_SystemState,portMAX_DELAY);
-                Serial.println(F("Chegou 2"));
+                system_state = GetState();
 
-                if(SystemState.State != MANUAL_MODE)
-                    SystemState.timesPressed = 0;
+                if(system_state.State != MANUAL_MODE)
+                    system_state_write.timesPressed = 0;
                 else
-                    SystemState.timesPressed++;
+                    system_state_write.timesPressed++;
                 
-                SystemState.State = MANUAL_MODE;
-                retState.State = SystemState.State;
-                retState.timesPressed = SystemState.timesPressed;
+                system_state_write.State = MANUAL_MODE;
+                SetState(system_state_write);
 
-                xSemaphoreGive(xMutex_SystemState);
                 Serial.println(F("Chegou 3"));
 
             }
-            Serial.println(F("Chegou fora do if"));
+            Serial.println(F("\tChegou fora do if"));
 
             if(xSemaphoreTake(xSemaphore_AutomaticButton,portMAX_DELAY) == pdTRUE){
-                xSemaphoreTake(xMutex_SystemState,portMAX_DELAY);
+                system_state = GetState();
 
-                if(SystemState.State != AUTOMATIC_MODE)
-                    SystemState.timesPressed = 0;
+                if(system_state.State != AUTOMATIC_MODE)
+                    system_state_write.timesPressed = 0;
                 else
-                    SystemState.timesPressed++;
+                    system_state_write.timesPressed++;
                 
-                SystemState.State = AUTOMATIC_MODE;
-                retState.State = SystemState.State;
-                retState.timesPressed = SystemState.timesPressed;
-
-                xSemaphoreGive(xMutex_SystemState);
+                system_state_write.State = AUTOMATIC_MODE;
+                SetState(system_state_write);
             }
 
             if(xSemaphoreTake(xSemaphore_StopButton,portMAX_DELAY) == pdTRUE){
-                xSemaphoreTake(xMutex_SystemState,portMAX_DELAY);
+                system_state = GetState();
 
-                if(SystemState.State != STOP_MODE)
-                    SystemState.timesPressed = 0;
+                if(system_state.State != STOP_MODE)
+                    system_state_write.timesPressed = 0;
                 else
-                    SystemState.timesPressed++;
+                    system_state_write.timesPressed++;
                 
-                SystemState.State = STOP_MODE;
-                retState.State = SystemState.State;
-                retState.timesPressed = SystemState.timesPressed;
-
-                xSemaphoreGive(xMutex_SystemState);
+                system_state_write.State = STOP_MODE;
+                SetState(system_state_write);
             }
 
         }
         
     }
 
-    srcSystem GetButtonState(void){
-        srcSystem retState;
-        Serial.println(F("Chegou antes do if"));
-        if(xSemaphoreTake(xSemaphore_ManualButton,portMAX_DELAY) == pdTRUE){
-            Serial.println(F("Chegou 1"));
-            xSemaphoreTake(xMutex_SystemState,portMAX_DELAY);
-            Serial.println(F("Chegou 2"));
-
-            if(SystemState.State != MANUAL_MODE)
-                SystemState.timesPressed = 0;
-            else
-                SystemState.timesPressed++;
-            
-            SystemState.State = MANUAL_MODE;
-            retState.State = SystemState.State;
-            retState.timesPressed = SystemState.timesPressed;
-
-            xSemaphoreGive(xMutex_SystemState);
-            Serial.println(F("Chegou 3"));
-
-        }
-        Serial.println(F("Chegou fora do if"));
-
-        if(xSemaphoreTake(xSemaphore_AutomaticButton,portMAX_DELAY) == pdTRUE){
-            xSemaphoreTake(xMutex_SystemState,portMAX_DELAY);
-
-            if(SystemState.State != AUTOMATIC_MODE)
-                SystemState.timesPressed = 0;
-            else
-                SystemState.timesPressed++;
-            
-            SystemState.State = AUTOMATIC_MODE;
-            retState.State = SystemState.State;
-            retState.timesPressed = SystemState.timesPressed;
-
-            xSemaphoreGive(xMutex_SystemState);
-        }
-
-        if(xSemaphoreTake(xSemaphore_StopButton,portMAX_DELAY) == pdTRUE){
-            xSemaphoreTake(xMutex_SystemState,portMAX_DELAY);
-
-            if(SystemState.State != STOP_MODE)
-                SystemState.timesPressed = 0;
-            else
-                SystemState.timesPressed++;
-            
-            SystemState.State = STOP_MODE;
-            retState.State = SystemState.State;
-            retState.timesPressed = SystemState.timesPressed;
-
-            xSemaphoreGive(xMutex_SystemState);
-        }
-
-        return retState;
-    }
 }
 
