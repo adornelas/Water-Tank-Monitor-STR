@@ -1,5 +1,4 @@
 #include <Arduino.h>
-#include <TimeLib.h>
 
 #include "motorsensing.hpp"
 #include "ultrassonic.hpp"
@@ -7,6 +6,7 @@
 #include "buttons.hpp"
 #include "connection.hpp"
 #include "lcd.hpp"
+#include "pump.hpp"
 #include "RTS_settings.h"
 
 SemaphoreHandle_t xMutex_Var_Water =  NULL;
@@ -19,66 +19,6 @@ SemaphoreHandle_t xMutex_SystemState = NULL;
 int WaterLevel;
 MotorSensing::motorInfoStruct motorInfo;
 srcSystem SystemState;
-
-void LigaMotor(){
-  digitalWrite(RELAY_PIN, LOW);
-}
-
-void DesligaMotor(){
-  digitalWrite(RELAY_PIN, HIGH);
-}
-
-void Task_Pump(void *parameters){
-  srcSystem stateBuffer;
-  MotorSensing::motorInfoStruct motor_info;
-  int water_level;
-
-  while(1)
-  {
-
-
-    stateBuffer = Button::GetState();
-    water_level = Ultrassonic::GetWaterLevel();
-    motor_info =  MotorSensing::getMotorInfoValue();
-    #if PRINT_DEBUG
-    Serial.print("MODO: ");
-    Serial.print(stateBuffer.State);
-    Serial.println(stateBuffer.timesPressed);
-    #endif
-
-    if(stateBuffer.State == STOP_MODE || 
-      motor_info.temperature > 26.0 || 
-      abs(motor_info.current) > 1.0){
-
-        DesligaMotor();
-        
-    }
-    
-    else{
-      if(stateBuffer.State == AUTOMATIC_MODE && water_level > 10){
-        DesligaMotor();
-      }
-
-      if(stateBuffer.State == AUTOMATIC_MODE && 
-        water_level < 10 &&
-        motor_info.temperature < 26.0 &&
-        abs(motor_info.current) < 1.0){
-
-          LigaMotor();
-      }
-      
-      if(stateBuffer.State == MANUAL_MODE && (stateBuffer.timesPressed % 2)){
-          LigaMotor();
-        }
-      // Modo automático, mas apertado um número impar de vezes
-      if(stateBuffer.State == MANUAL_MODE && !(stateBuffer.timesPressed % 2)){
-          DesligaMotor();
-        }
-    }
-    vTaskDelay(PUMP_PERIOD/portTICK_PERIOD_MS);
-  }
-  
-}
 
 void Task_Upload_Status(void *parameters){
   MotorSensing::motorInfoStruct motor_info;
@@ -134,20 +74,18 @@ void setup() {
   MotorSensing::setup();
   Ultrassonic::setup();
   Button::setup();
+  Pump::setup();
   Connection::setup();
   LCD::setup();
 
   xTaskCreate(Ultrassonic::Task_Measure_Water, "Measure_Water", configMINIMAL_STACK_SIZE * 2, NULL, tskIDLE_PRIORITY + MEASURE_WATER_PRIORITY, NULL);   
   xTaskCreate(MotorSensing::Task_MeasureMotor, "Measure_MotorInfo", configMINIMAL_STACK_SIZE * 2, NULL, tskIDLE_PRIORITY + MEASURE_MOTOR_PRIORITY, NULL);   
-  xTaskCreate(Task_Pump, "Pump", configMINIMAL_STACK_SIZE * 2, NULL, tskIDLE_PRIORITY + PUMP_PRIORITY, NULL);
+  xTaskCreate(Pump::Task_HandlePump, "HandlePump", configMINIMAL_STACK_SIZE * 2, NULL, tskIDLE_PRIORITY + PUMP_PRIORITY, NULL);
   xTaskCreate(Button::Task_HandleAutomatic, "Handle_Buttons", configMINIMAL_STACK_SIZE * 2, NULL, tskIDLE_PRIORITY + HANDLE_AUTOMATIC_PRIORITY, NULL);   
   xTaskCreate(Button::Task_HandleManual, "Handle_Buttons", configMINIMAL_STACK_SIZE * 2, NULL, tskIDLE_PRIORITY + HANDLE_MANUAL_PRIORITY, NULL);   
   xTaskCreate(Button::Task_HandleStop, "Handle_Buttons", configMINIMAL_STACK_SIZE * 2, NULL, tskIDLE_PRIORITY + HANDLE_STOP_PRIORITY, NULL);   
   xTaskCreate(Task_Upload_Status, "Task_Upload_Status", configMINIMAL_STACK_SIZE * 8, NULL, tskIDLE_PRIORITY + UPLOAD_STATUS_PRIORITY, NULL);
   xTaskCreate(LCD::Task_LCD, "LCD", configMINIMAL_STACK_SIZE * 8, NULL, tskIDLE_PRIORITY + LCD_PRIORITY, NULL);
-  
-  pinMode(RELAY_PIN, OUTPUT);
-  digitalWrite(RELAY_PIN, HIGH);
 }
 
 void loop() {
