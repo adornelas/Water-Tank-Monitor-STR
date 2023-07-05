@@ -129,9 +129,12 @@ namespace Button{
     {
         srcSystem system_state;
         srcSystem system_state_write;
+        struct timeval t0,t1, dt;
+
         while (1)
         {
             if(xSemaphoreTake(xSemaphore_ManualButton,portMAX_DELAY) == pdTRUE){
+                gettimeofday(&t0,NULL);
                 system_state = GetState();
 
                 if(system_state.State != MANUAL_MODE)
@@ -141,6 +144,12 @@ namespace Button{
                 
                 system_state_write.State = MANUAL_MODE;
                 SetState(system_state_write);
+                gettimeofday(&t1,NULL);
+                timersub(&t1, &t0, &dt);
+                Serial.print("Task_ManualButton:");
+                Serial.print(dt.tv_sec);
+                Serial.print(".");
+                Serial.println(dt.tv_usec);
             }
         }
         
@@ -150,9 +159,12 @@ namespace Button{
     {
         srcSystem system_state;
         srcSystem system_state_write;
+        struct timeval t0,t1, dt;
+
         while (1)
         {
             if(xSemaphoreTake(xSemaphore_AutomaticButton,portMAX_DELAY) == pdTRUE){
+                gettimeofday(&t0,NULL);
                 system_state = GetState();
 
                 if(system_state.State != AUTOMATIC_MODE)
@@ -162,8 +174,13 @@ namespace Button{
                 
                 system_state_write.State = AUTOMATIC_MODE;
                 SetState(system_state_write);
+                gettimeofday(&t1,NULL);
+                timersub(&t1, &t0, &dt);
+                Serial.print("Task_AutomaticButton:");
+                Serial.print(dt.tv_sec);
+                Serial.print(".");
+                Serial.println(dt.tv_usec);
             }
-
         }
         
     }
@@ -172,9 +189,12 @@ namespace Button{
     {
         srcSystem system_state;
         srcSystem system_state_write;
+        struct timeval t0,t1, dt;
+
         while (1)
         {
             if(xSemaphoreTake(xSemaphore_StopButton,portMAX_DELAY) == pdTRUE){
+            gettimeofday(&t0,NULL);
                 system_state = GetState();
 
                 if(system_state.State != STOP_MODE)
@@ -184,8 +204,13 @@ namespace Button{
                 
                 system_state_write.State = STOP_MODE;
                 SetState(system_state_write);
+                gettimeofday(&t1,NULL);
+                timersub(&t1, &t0, &dt);
+                Serial.print("Task_StopButton:");
+                Serial.print(dt.tv_sec);
+                Serial.print(".");
+                Serial.println(dt.tv_usec);
             }
-
         }
         
     }

@@ -5,7 +5,7 @@ namespace MotorSensing {
     motorInfoStruct motorInfo;
 
     ACS712 sensor(ACS712_05B, CURRENT_GPIO);
-    DHT dht(TEMPERATURE_GPIO, DHT11);
+    DHT dht(TEMPERATURE_GPIO, DHT22);
 
     void setup() {
         // TODO: Garantir que motor esteja desligado neste setup
@@ -19,8 +19,11 @@ namespace MotorSensing {
     void Task_MeasureMotor(void *parameters){
         int current_value;
         motorInfoStruct motor_info;
+        struct timeval t0,t1, dt;
+
         while (1)
         {
+            gettimeofday(&t0,NULL);
             // TODO: desabilitar interrupções para calculo correto dos valores
             measureMotor(&motor_info);
             #if PRINT_DEBUG
@@ -30,6 +33,12 @@ namespace MotorSensing {
             Serial.println(motor_info.current);
             #endif
             SetMotorInfoValue(motor_info.current, motor_info.temperature);
+            gettimeofday(&t1,NULL);
+            timersub(&t1, &t0, &dt);
+            Serial.print("Task_MeasureMotor:");
+            Serial.print(dt.tv_sec);
+            Serial.print(".");
+            Serial.println(dt.tv_usec);
             vTaskDelay(MEASURE_MOTOR_PERIOD/portTICK_PERIOD_MS);
         }
     }

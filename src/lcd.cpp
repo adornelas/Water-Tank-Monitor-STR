@@ -33,8 +33,11 @@ namespace LCD {
         srcSystem system_state;
         MotorSensing::motorInfoStruct motor_info;
         int water_level;
+        struct timeval t0,t1, dt;
+
         while (1)
         {
+            gettimeofday(&t0,NULL);
             system_state = Button::GetState();
             writeState(system_state);
             water_level = Ultrassonic::GetWaterLevel();
@@ -42,6 +45,12 @@ namespace LCD {
             motor_info =  MotorSensing::getMotorInfoValue();
             writeCurrent(motor_info.current);
             writeTemperature(motor_info.temperature);
+            gettimeofday(&t1,NULL);
+            timersub(&t1, &t0, &dt);
+            Serial.print("Task_LCD:");
+            Serial.print(dt.tv_sec);
+            Serial.print(".");
+            Serial.println(dt.tv_usec);
             vTaskDelay(500/portTICK_PERIOD_MS);
         }
     }

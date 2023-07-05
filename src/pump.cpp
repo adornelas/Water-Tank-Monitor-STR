@@ -11,9 +11,11 @@ namespace Pump {
         srcSystem stateBuffer;
         MotorSensing::motorInfoStruct motor_info;
         int water_level;
+        struct timeval t0,t1, dt;
 
         while(1)
         {
+            gettimeofday(&t0,NULL);
             stateBuffer = Button::GetState();
             water_level = Ultrassonic::GetWaterLevel();
             motor_info =  MotorSensing::getMotorInfoValue();
@@ -51,6 +53,12 @@ namespace Pump {
                 DesligaMotor();
                 }
             }
+            gettimeofday(&t1,NULL);
+            timersub(&t1, &t0, &dt);
+            Serial.print("Task_HandlePump:");
+            Serial.print(dt.tv_sec);
+            Serial.print(".");
+            Serial.println(dt.tv_usec);
             vTaskDelay(PUMP_PERIOD/portTICK_PERIOD_MS);
         }
   
