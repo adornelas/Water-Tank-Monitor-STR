@@ -46,12 +46,12 @@ namespace MotorSensing {
         float I;
         float t;
         I = sensor.getCurrentDC();
-        // TODO: garantir que as leituras sejam feitas com ao menos 2s de espaçamento
         t = dht.readTemperature();
         if (isnan(t)) {
             #if PRINT_DEBUG
             Serial.println(F("Failed to read from DHT sensor!"));
             #endif
+            motor_info->temperature = -1.0;
         } else {
             motor_info->temperature = t;
         }

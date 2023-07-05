@@ -94,12 +94,9 @@ namespace LCD {
 
     void writeTemperature(float temperature)
     {
-        // TODO: Setar temperatura negativa caso haja erro na medição
         if(temperature >= 0.0 && temperature <= 99.0)
         {
             lcd.setCursor(14, 1);
-            Serial.print("IMPRIMINDO:");
-            Serial.println(String(temperature,0));
             lcd.print(String(temperature,0));
         }
         else
