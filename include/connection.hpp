@@ -7,8 +7,9 @@
 #include <HTTPClient.h>
 #include "ultrassonic.hpp"
 #include "motorsensing.hpp"
+#include "RTS_settings.h"
 
-#define SEND_INTERVAL_TIME 500000 // segundos... Coloquei alto pra não ficar usando a cota gratuita lá kkk
+#define SEND_INTERVAL_TIME 1000 // segundos... Coloquei alto pra não ficar usando a cota gratuita lá kkk
 
 // Replace with your network credentials
 extern const char* ssid;

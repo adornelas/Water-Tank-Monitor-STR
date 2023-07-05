@@ -1,0 +1,24 @@
+#ifndef RTOS_SETTINGS_H
+#define RTOS_SETTINGS_H
+
+// #define configGENERATE_RUN_TIME_STATS 1
+
+// char *stats;
+
+#define PRINT_DEBUG true
+#define STATS_DEBUG false
+
+#define MEASURE_WATER_PRIORITY      3
+#define MEASURE_MOTOR_PRIORITY      2
+#define PUMP_PRIORITY               1
+#define HANDLE_AUTOMATIC_PRIORITY   4
+#define HANDLE_MANUAL_PRIORITY      5
+#define HANDLE_STOP_PRIORITY        6
+#define UPLOAD_STATUS_PRIORITY      7
+
+#define MEASURE_WATER_PERIOD 500
+#define MEASURE_MOTOR_PERIOD 500
+#define PUMP_PERIOD 500
+#define UPLOAD_STATUS_PERIOD 2000
+
+#endif

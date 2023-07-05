@@ -1,6 +1,8 @@
 #ifndef PINS_H
 #define PINS_H
 
+#include "RTS_settings.h"
+
 #define RELAY_PIN 5
 
 #define MANUAL_BUTTON 35

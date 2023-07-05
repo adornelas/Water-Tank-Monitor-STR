@@ -2,6 +2,7 @@
 
 #include <Arduino.h>
 #include "pins.h"
+#include "RTS_settings.h"
 
 extern SemaphoreHandle_t xMutex_Var_Water;
 
