@@ -1,7 +1,8 @@
 #ifndef RTOS_SETTINGS_H
 #define RTOS_SETTINGS_H
 
-#define PRINT_DEBUG true
+#define PRINT_DEBUG false
+#define MEASURE_TIME false
 
 #define HANDLE_STOP_PRIORITY        1
 #define PUMP_PRIORITY               2
