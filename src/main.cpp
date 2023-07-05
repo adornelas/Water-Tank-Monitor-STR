@@ -65,8 +65,5 @@ void setup() {
 }
 
 void loop() {
-  #if PRINT_DEBUG
-  Serial.printf("\n\rSupende tarefa LOOP");
-  #endif
   vTaskSuspend(NULL);
 }
