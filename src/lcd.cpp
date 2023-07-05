@@ -11,12 +11,12 @@ namespace LCD {
         lcd.backlight();
 
         lcd.setCursor(0, 0);
-        lcd.print("Modo:");
+        lcd.print("Modo ");
         lcd.setCursor(5, 0);
         lcd.print("STOP ");
         lcd.setCursor(10, 0);
         lcd.print("Alt:");
-        lcd.setCursor(14, 1);
+        lcd.setCursor(14, 0);
         lcd.print("00");
 
         lcd.setCursor(0, 1);
@@ -40,7 +40,8 @@ namespace LCD {
             water_level = Ultrassonic::GetWaterLevel();
             writeWaterLevel(water_level);
             motor_info =  MotorSensing::getMotorInfoValue();
-
+            writeCurrent(motor_info.current);
+            writeTemperature(motor_info.temperature);
             vTaskDelay(500/portTICK_PERIOD_MS);
         }
     }
@@ -66,9 +67,16 @@ namespace LCD {
 
     void writeWaterLevel(int water_level)
     {
-        if(water_level >= 0 && water_level <= 14)
+        if(water_level >= 0 && water_level <= 9)
         {
-            lcd.setCursor(14, 1);
+            lcd.setCursor(14, 0);
+            lcd.print(" ");
+            lcd.setCursor(15, 0);
+            lcd.print(String(water_level));
+        }
+        else if(water_level >= 10 && water_level <= 14)
+        {
+            lcd.setCursor(14, 0);
             lcd.print(String(water_level));
         }
     }
@@ -90,6 +98,8 @@ namespace LCD {
         if(temperature >= 0.0 && temperature <= 99.0)
         {
             lcd.setCursor(14, 1);
+            Serial.print("IMPRIMINDO:");
+            Serial.println(String(temperature,0));
             lcd.print(String(temperature,0));
         }
         else
