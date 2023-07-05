@@ -30,17 +30,6 @@ MotorSensing::motorInfoStruct GetMotorInfoValue()
   return info_struct;
 }
 
-int GetWaterLevel()
-{
-  int water_level;
-  // Obtains the Global Variable Mutex
-  xSemaphoreTake(xMutex_Var_Water,portMAX_DELAY );
-  WaterLevel = water_level;
-  // Releases the Global Variable Mutex
-  xSemaphoreGive(xMutex_Var_Water);
-  return water_level;
-}
-
 void LigaMotor(){
   digitalWrite(RELAY_PIN, LOW);
 }
@@ -57,7 +46,7 @@ void Task_Pump(void *parameters){
   while(1)
   {
     stateBuffer = Button::GetState();
-    water_level = GetWaterLevel();
+    water_level = Ultrassonic::GetWaterLevel();
     motor_info =  MotorSensing::getMotorInfoValue();
     #if PRINT_DEBUG
     Serial.print("stateBuffer.State ");
@@ -108,7 +97,7 @@ void Task_Upload_Status(void *parameters){
   int water_level;
 
   while(1){
-    water_level = GetWaterLevel();
+    water_level = Ultrassonic::GetWaterLevel();
 
     motor_info =  MotorSensing::getMotorInfoValue();
 
