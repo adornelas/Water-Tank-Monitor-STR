@@ -20,30 +20,6 @@ int WaterLevel;
 MotorSensing::motorInfoStruct motorInfo;
 srcSystem SystemState;
 
-void Task_Upload_Status(void *parameters){
-  MotorSensing::motorInfoStruct motor_info;
-  int water_level;
-
-  while(1){
-    water_level = Ultrassonic::GetWaterLevel();
-
-    motor_info =  MotorSensing::getMotorInfoValue();
-
-    if(WiFi.status() == WL_CONNECTED){
-      Connection::uploadInfos(&motor_info.current, &motor_info.temperature, &water_level);
-    }
-    else
-    {
-      #if PRINT_DEBUG
-      Serial.println("Desconectado da internet");
-      #endif
-    }
-
-    vTaskDelay(UPLOAD_STATUS_PERIOD*SEND_INTERVAL_TIME/portTICK_PERIOD_MS);
-  }
-  
-}
-
 void setup() {
   Serial.begin(115200);
   #if PRINT_DEBUG
@@ -84,7 +60,7 @@ void setup() {
   xTaskCreate(Button::Task_HandleAutomatic, "Handle_Buttons", configMINIMAL_STACK_SIZE * 2, NULL, tskIDLE_PRIORITY + HANDLE_AUTOMATIC_PRIORITY, NULL);   
   xTaskCreate(Button::Task_HandleManual, "Handle_Buttons", configMINIMAL_STACK_SIZE * 2, NULL, tskIDLE_PRIORITY + HANDLE_MANUAL_PRIORITY, NULL);   
   xTaskCreate(Button::Task_HandleStop, "Handle_Buttons", configMINIMAL_STACK_SIZE * 2, NULL, tskIDLE_PRIORITY + HANDLE_STOP_PRIORITY, NULL);   
-  xTaskCreate(Task_Upload_Status, "Task_Upload_Status", configMINIMAL_STACK_SIZE * 8, NULL, tskIDLE_PRIORITY + UPLOAD_STATUS_PRIORITY, NULL);
+  xTaskCreate(Connection::Task_Upload_Status, "Task_Upload_Status", configMINIMAL_STACK_SIZE * 8, NULL, tskIDLE_PRIORITY + UPLOAD_STATUS_PRIORITY, NULL);
   xTaskCreate(LCD::Task_LCD, "LCD", configMINIMAL_STACK_SIZE * 8, NULL, tskIDLE_PRIORITY + LCD_PRIORITY, NULL);
 }
 
