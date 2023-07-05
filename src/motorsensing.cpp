@@ -24,9 +24,9 @@ namespace MotorSensing {
             // TODO: desabilitar interrupções para calculo correto dos valores
             measureMotor(&motor_info);
             #if PRINT_DEBUG
-            Serial.print(F("Temp: "));
+            Serial.print(F("Temperatura: "));
             Serial.println(motor_info.temperature);
-            Serial.print(F(" Corr: "));
+            Serial.print(F("Corrente: "));
             Serial.println(motor_info.current);
             #endif
             SetMotorInfoValue(motor_info.current, motor_info.temperature);

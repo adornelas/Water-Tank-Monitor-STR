@@ -19,7 +19,7 @@ namespace Ultrassonic {
         // TODO: desabilitar interrupções para calculo correto do nível
         measureWaterLevel(&water_level);
         #if PRINT_DEBUG
-        Serial.print(F("W:mediu "));
+        Serial.print(F("Nível de água: "));
         Serial.println(water_level);
         #endif
         SetWaterLevel(water_level);
