@@ -26,8 +26,7 @@ namespace Connection{
     extern WiFiClientSecure client;
 
     void setup(void);
-    void uploadInfos(float *current, 
-                    float *temperature,
-                    int *level);
-
+    void uploadInfos();
+    void Task_Upload_Status(void *parameters);
+    
 }
