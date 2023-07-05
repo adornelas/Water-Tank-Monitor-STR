@@ -58,7 +58,10 @@ namespace Connection{
     }
 
     void Task_Upload_Status(void *parameters){
+        struct timeval t0,t1, dt;
+
         while(1){
+            gettimeofday(&t0,NULL);
             if(WiFi.status() == WL_CONNECTED){
                 Connection::uploadInfos();
             }
@@ -68,7 +71,12 @@ namespace Connection{
                 Serial.println("Desconectado da internet");
                 #endif
             }
-
+            gettimeofday(&t1,NULL);
+            timersub(&t1, &t0, &dt);
+            Serial.print("Task_Upload_Status:");
+            Serial.print(dt.tv_sec);
+            Serial.print(".");
+            Serial.println(dt.tv_usec);
             vTaskDelay(UPLOAD_STATUS_PERIOD*SEND_INTERVAL_TIME/portTICK_PERIOD_MS);
         }
   
