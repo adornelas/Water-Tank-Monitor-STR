@@ -49,7 +49,9 @@ namespace Button{
 
         xMutex_SystemState = xSemaphoreCreateMutex();
         if(xMutex_SystemState == NULL){
+            #if PRINT_DEBUG
             Serial.printf("\n\rFalha em criar o Mutex para o botão desejado");
+            #endif
         }
 
         system_state.State = STOP_MODE;
@@ -70,7 +72,9 @@ namespace Button{
         vSemaphoreCreateBinary(xSemaphore_ManualButton);
 
         if(xSemaphore_ManualButton == NULL){
+            #if PRINT_DEBUG
             Serial.printf("\n\rFalha em criar o semafaro para botão manual");
+            #endif
         }
         xSemaphoreTake(xSemaphore_ManualButton,(TickType_t)100);
     }
@@ -83,7 +87,9 @@ namespace Button{
 
         vSemaphoreCreateBinary(xSemaphore_AutomaticButton);
         if(xSemaphore_ManualButton == NULL){
+            #if PRINT_DEBUG
             Serial.printf("\n\rFalha em criar o semafaro para botão automático");
+            #endif
         }
         xSemaphoreTake(xSemaphore_AutomaticButton,(TickType_t)100);
     }
@@ -96,7 +102,9 @@ namespace Button{
 
         vSemaphoreCreateBinary(xSemaphore_StopButton);
         if(xSemaphore_ManualButton == NULL){
+            #if PRINT_DEBUG
             Serial.printf("\n\rFalha em criar o semafaro para botão stop");
+            #endif
         }
         xSemaphoreTake(xSemaphore_StopButton,(TickType_t)100);
     }
@@ -104,7 +112,6 @@ namespace Button{
     void SetState(srcSystem system_state){
         xSemaphoreTake(xMutex_SystemState,portMAX_DELAY );
         SystemState = system_state;
-        // Serial.println(F("T:atribuiu"));
         xSemaphoreGive(xMutex_SystemState);
     }
 

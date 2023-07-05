@@ -1,9 +1,9 @@
 #include "connection.hpp"
 
 // NOME DA REDE WIFI
-const char* ssid     = "Redmi-Hiago";
+const char* ssid     = "Andre";
 // SEnha da rede wifi
-const char* password = "12345670";
+const char* password = "papagaio";
 
 // supabase credentials
 String API_URL = "https://gxxsgcigwtxtmgnwldep.supabase.co";
@@ -20,17 +20,22 @@ namespace Connection{
         client.setInsecure();
 
         WiFi.begin(ssid, password);
+        #if PRINT_DEBUG
         Serial.print("Connecting to ");
         Serial.println(ssid);
+        #endif
         while (WiFi.status() != WL_CONNECTED){
             delay(500);
+            #if PRINT_DEBUG
             Serial.print(".");
+            #endif
         }
-        
+        #if PRINT_DEBUG
         Serial.println("");
         Serial.println("WiFi connected.");
         Serial.println("IP address: ");
         Serial.println(WiFi.localIP());   
+        #endif
     }
 
     void uploadInfos(float *current, float *temperature, int *level){
@@ -44,10 +49,6 @@ namespace Connection{
         https.addHeader("Authorization", "Bearer " + API_KEY);
 
         int httpCode = https.POST("{\"temperature\":" + String(*temperature)+ ",\"corrente\":"+ String(*current)+",\"nivel\":" + String(*level)+"}" );   //Send the request
-        // https.POST("");
-        // String payload = https.getString(); 
-        // Serial.println(httpCode);   //Print HTTP return code
-        // Serial.println(payload);    //Print request response payload
         https.end();
 
         // }

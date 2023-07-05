@@ -17,24 +17,20 @@ namespace Ultrassonic {
         while (1)
         {        
         // TODO: desabilitar interrupções para calculo correto do nível
-        // Serial.println(F("W:Medindo a agua"));
         measureWaterLevel(&water_level);
+        #if PRINT_DEBUG
         Serial.print(F("W:mediu "));
         Serial.println(water_level);
+        #endif
         SetWaterLevel(water_level);
-        // Serial.println(F("W:Delay"));
-        // Serial.println(F("W:Final da task measure water"));
-        vTaskDelay(1000/portTICK_PERIOD_MS);
+        vTaskDelay(MEASURE_WATER_PERIOD/portTICK_PERIOD_MS);
         }
     }
 
     void SetWaterLevel(int water_level)
     {
-        // Obtains the Global Variable Mutex
         xSemaphoreTake(xMutex_Var_Water,portMAX_DELAY );
         WaterLevel = water_level;
-        // Serial.println(F("W:atribuiu"));
-        // Releases the Global Variable Mutex
         xSemaphoreGive(xMutex_Var_Water);
     }
 
