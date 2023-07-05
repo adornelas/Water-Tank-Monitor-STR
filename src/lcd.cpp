@@ -47,10 +47,12 @@ namespace LCD {
             writeTemperature(motor_info.temperature);
             gettimeofday(&t1,NULL);
             timersub(&t1, &t0, &dt);
+            #if MEASURE_TIME
             Serial.print("Task_LCD:");
             Serial.print(dt.tv_sec);
             Serial.print(".");
             Serial.println(dt.tv_usec);
+            #endif
             vTaskDelay(500/portTICK_PERIOD_MS);
         }
     }

@@ -73,10 +73,12 @@ namespace Connection{
             }
             gettimeofday(&t1,NULL);
             timersub(&t1, &t0, &dt);
+            #if MEASURE_TIME
             Serial.print("Task_Upload_Status:");
             Serial.print(dt.tv_sec);
             Serial.print(".");
             Serial.println(dt.tv_usec);
+            #endif
             vTaskDelay(UPLOAD_STATUS_PERIOD*SEND_INTERVAL_TIME/portTICK_PERIOD_MS);
         }
   

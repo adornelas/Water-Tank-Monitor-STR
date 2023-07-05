@@ -35,10 +35,12 @@ namespace MotorSensing {
             SetMotorInfoValue(motor_info.current, motor_info.temperature);
             gettimeofday(&t1,NULL);
             timersub(&t1, &t0, &dt);
+            #if MEASURE_TIME
             Serial.print("Task_MeasureMotor:");
             Serial.print(dt.tv_sec);
             Serial.print(".");
             Serial.println(dt.tv_usec);
+            #endif
             vTaskDelay(MEASURE_MOTOR_PERIOD/portTICK_PERIOD_MS);
         }
     }

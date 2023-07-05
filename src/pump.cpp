@@ -55,10 +55,12 @@ namespace Pump {
             }
             gettimeofday(&t1,NULL);
             timersub(&t1, &t0, &dt);
+            #if MEASURE_TIME
             Serial.print("Task_HandlePump:");
             Serial.print(dt.tv_sec);
             Serial.print(".");
             Serial.println(dt.tv_usec);
+            #endif
             vTaskDelay(PUMP_PERIOD/portTICK_PERIOD_MS);
         }
   

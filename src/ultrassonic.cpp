@@ -28,10 +28,12 @@ namespace Ultrassonic {
         SetWaterLevel(water_level);
         gettimeofday(&t1,NULL);
         timersub(&t1, &t0, &dt);
+        #if MEASURE_TIME
         Serial.print("Task_Measure_Water:");
         Serial.print(dt.tv_sec);
         Serial.print(".");
         Serial.println(dt.tv_usec);
+        #endif
         vTaskDelay(MEASURE_WATER_PERIOD/portTICK_PERIOD_MS);
         }
     }

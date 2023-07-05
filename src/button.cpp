@@ -146,10 +146,12 @@ namespace Button{
                 SetState(system_state_write);
                 gettimeofday(&t1,NULL);
                 timersub(&t1, &t0, &dt);
+                #if MEASURE_TIME
                 Serial.print("Task_ManualButton:");
                 Serial.print(dt.tv_sec);
                 Serial.print(".");
                 Serial.println(dt.tv_usec);
+                #endif
             }
         }
         
@@ -176,10 +178,12 @@ namespace Button{
                 SetState(system_state_write);
                 gettimeofday(&t1,NULL);
                 timersub(&t1, &t0, &dt);
+                #if MEASURE_TIME
                 Serial.print("Task_AutomaticButton:");
                 Serial.print(dt.tv_sec);
                 Serial.print(".");
                 Serial.println(dt.tv_usec);
+                #endif
             }
         }
         
@@ -206,10 +210,12 @@ namespace Button{
                 SetState(system_state_write);
                 gettimeofday(&t1,NULL);
                 timersub(&t1, &t0, &dt);
+                #if MEASURE_TIME
                 Serial.print("Task_StopButton:");
                 Serial.print(dt.tv_sec);
                 Serial.print(".");
                 Serial.println(dt.tv_usec);
+                #endif
             }
         }
         
