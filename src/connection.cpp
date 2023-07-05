@@ -4,7 +4,7 @@
 
 // NOME DA REDE WIFI
 const char* ssid     = "Andre";
-// SEnha da rede wifi
+// SENHA DA REDE WIFI
 const char* password = "papagaio";
 
 // supabase credentials
@@ -40,32 +40,40 @@ namespace Connection{
         #endif
     }
 
-    void uploadInfos(float *current, float *temperature, int *level){
+    void uploadInfos(){
         MotorSensing::motorInfoStruct motor_info;
         int water_level;
 
-        water_level = Ultrassonic::GetWaterLevel();
-        motor_info =  MotorSensing::getMotorInfoValue();
-
-        Serial.print("             T:");
-        Serial.println(*current);
-        Serial.println(*temperature);
-        Serial.println(*level);
-
-        // if (WiFi.status() == WL_CONNECTED) {
-            // Send the a post request to the server
         https.begin(client,API_URL+"/rest/v1/"+TableName);
         https.addHeader("Content-Type", "application/json");
         https.addHeader("Prefer", "return=representation");
         https.addHeader("apikey", API_KEY);
         https.addHeader("Authorization", "Bearer " + API_KEY);
 
+        water_level = Ultrassonic::GetWaterLevel();
+        motor_info =  MotorSensing::getMotorInfoValue();
+
         int httpCode = https.POST("{\"temperature\":" + String(motor_info.temperature)+ ",\"corrente\":"+ String(motor_info.current)+",\"nivel\":" + String(water_level)+"}" );   //Send the request
         https.end();
-
-        // }
-        
     }
+
+    void Task_Upload_Status(void *parameters){
+        while(1){
+            if(WiFi.status() == WL_CONNECTED){
+                Connection::uploadInfos();
+            }
+            else
+            {
+                #if PRINT_DEBUG
+                Serial.println("Desconectado da internet");
+                #endif
+            }
+
+            vTaskDelay(UPLOAD_STATUS_PERIOD*SEND_INTERVAL_TIME/portTICK_PERIOD_MS);
+        }
+  
+    }
+
     
 }
 
