@@ -1,4 +1,6 @@
 #include "connection.hpp"
+#include "ultrassonic.hpp"
+#include "motorsensing.hpp"
 
 // NOME DA REDE WIFI
 const char* ssid     = "Andre";
@@ -39,6 +41,16 @@ namespace Connection{
     }
 
     void uploadInfos(float *current, float *temperature, int *level){
+        MotorSensing::motorInfoStruct motor_info;
+        int water_level;
+
+        water_level = Ultrassonic::GetWaterLevel();
+        motor_info =  MotorSensing::getMotorInfoValue();
+
+        Serial.print("             T:");
+        Serial.println(*current);
+        Serial.println(*temperature);
+        Serial.println(*level);
 
         // if (WiFi.status() == WL_CONNECTED) {
             // Send the a post request to the server
@@ -48,7 +60,7 @@ namespace Connection{
         https.addHeader("apikey", API_KEY);
         https.addHeader("Authorization", "Bearer " + API_KEY);
 
-        int httpCode = https.POST("{\"temperature\":" + String(*temperature)+ ",\"corrente\":"+ String(*current)+",\"nivel\":" + String(*level)+"}" );   //Send the request
+        int httpCode = https.POST("{\"temperature\":" + String(motor_info.temperature)+ ",\"corrente\":"+ String(motor_info.current)+",\"nivel\":" + String(water_level)+"}" );   //Send the request
         https.end();
 
         // }
