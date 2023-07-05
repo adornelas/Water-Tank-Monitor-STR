@@ -15,4 +15,7 @@ namespace Pump{
 
     void setup();
     void Task_HandlePump(void *parameters);
+    void LigaMotor();
+    void DesligaMotor();
+
 }
