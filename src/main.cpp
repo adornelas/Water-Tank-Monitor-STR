@@ -41,35 +41,58 @@ int GetWaterLevel()
   return water_level;
 }
 
+void LigaMotor(){
+  digitalWrite(RELAY_PIN, LOW);
+}
+
+void DesligaMotor(){
+  digitalWrite(RELAY_PIN, HIGH);
+}
+
 void Task_Pump(void *parameters){
-  // MotorSensing::motorInfoStruct motor_info;
-  // int water__level;
   srcSystem stateBuffer;
+  MotorSensing::motorInfoStruct motor_info;
+  int water_level;
+
   while(1)
   {
-    // Serial.println(F("Começou task_pump"));
     stateBuffer = Button::GetState();
-    // Serial.print(F("     Pegou state: "));    
-    // Serial.print(stateBuffer.State);
-    // Serial.println(stateBuffer.timesPressed);
-    // Le os dados das informações do motor
-    // motor_info = GetMotorInfoValue();
-    // water__level = GetWaterLevel();
-    
-    // Aciona o motor de acordo com o modo de funcionamento
-    //
-    vTaskDelay(2000/portTICK_PERIOD_MS);
-    // digitalWrite(RELAY_PIN, LOW);
+    water_level = GetWaterLevel();
+    motor_info =  MotorSensing::getMotorInfoValue();
+    Serial.print("stateBuffer.State ");
+    Serial.println(stateBuffer.State);
 
+    Serial.print("stateBuffer.timesPressed ");
+    Serial.println(stateBuffer.timesPressed);
+
+    if(stateBuffer.State == STOP_MODE || 
+      motor_info.temperature > 26.0 || 
+      abs(motor_info.current) > 1.0 ||
+      water_level > 10){
+
+        DesligaMotor();
+        
+    }
+    
+    else{
+      if(stateBuffer.State == AUTOMATIC_MODE && water_level < 10){
+        DesligaMotor();
+        }
+      
+      if(stateBuffer.State == MANUAL_MODE && (stateBuffer.timesPressed % 2)){
+          LigaMotor();
+        }
+      // Modo automático, mas apertado um número impar de vezes
+      if(stateBuffer.State == MANUAL_MODE && !(stateBuffer.timesPressed % 2)){
+          DesligaMotor();
+        }
+    }
+    vTaskDelay(500/portTICK_PERIOD_MS);
   }
   
 }
 
-
 void Upload_Status(void *parameters){
-  float current = 0;
-  float temperature = 0;
-  int level = 0;
   MotorSensing::motorInfoStruct motor_info;
   int water_level;
 
