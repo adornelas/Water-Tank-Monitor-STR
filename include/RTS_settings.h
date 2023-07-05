@@ -5,7 +5,7 @@
 
 // char *stats;
 
-#define PRINT_DEBUG true
+#define PRINT_DEBUG false
 #define STATS_DEBUG false
 
 #define MEASURE_WATER_PRIORITY      3
@@ -17,7 +17,7 @@
 #define UPLOAD_STATUS_PRIORITY      7
 
 #define MEASURE_WATER_PERIOD 500
-#define MEASURE_MOTOR_PERIOD 500
+#define MEASURE_MOTOR_PERIOD 2000
 #define PUMP_PERIOD 500
 #define UPLOAD_STATUS_PERIOD 2000
 
