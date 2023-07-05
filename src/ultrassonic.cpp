@@ -46,12 +46,12 @@ namespace Ultrassonic {
         *water_level = (MaxLevel - distance);
     }
 
-    void getWaterLevel(int *water_level){
-
+    int GetWaterLevel(){
+        int water_level;
         xSemaphoreTake(xMutex_Var_Water,portMAX_DELAY );
-        *water_level = WaterLevel;
-        // Releases the Global Variable Mutex
+        water_level = WaterLevel;
         xSemaphoreGive(xMutex_Var_Water);
+        return water_level;
     }
 
 }
