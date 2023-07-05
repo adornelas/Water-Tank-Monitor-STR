@@ -5,6 +5,7 @@
 #include "pins.h"
 #include "buttons.hpp"
 #include "connection.hpp"
+#include "lcd.hpp"
 #include "RTS_settings.h"
 
 SemaphoreHandle_t xMutex_Var_Water =  NULL;
@@ -49,7 +50,7 @@ void Task_Pump(void *parameters){
     water_level = Ultrassonic::GetWaterLevel();
     motor_info =  MotorSensing::getMotorInfoValue();
     #if PRINT_DEBUG
-    Serial.print("stateBuffer.State ");
+    Serial.print("MODO: ");
     Serial.print(stateBuffer.State);
     Serial.println(stateBuffer.timesPressed);
     #endif
@@ -83,10 +84,6 @@ void Task_Pump(void *parameters){
           DesligaMotor();
         }
     }
-    // vTaskGetRunTimeStats(stats);
-    #if STATS_DEBUG
-    Serial.println(stats);
-    #endif
     vTaskDelay(PUMP_PERIOD/portTICK_PERIOD_MS);
   }
   
@@ -147,6 +144,7 @@ void setup() {
   Ultrassonic::setup();
   Button::setup();
   Connection::setup();
+  LCD::setup();
 
   xTaskCreate(Ultrassonic::Task_Measure_Water, "Measure_Water", configMINIMAL_STACK_SIZE * 2, NULL, tskIDLE_PRIORITY + MEASURE_WATER_PRIORITY, NULL);   
   xTaskCreate(MotorSensing::Task_MeasureMotor, "Measure_MotorInfo", configMINIMAL_STACK_SIZE * 2, NULL, tskIDLE_PRIORITY + MEASURE_MOTOR_PRIORITY, NULL);   
@@ -155,6 +153,8 @@ void setup() {
   xTaskCreate(Button::Task_HandleManual, "Handle_Buttons", configMINIMAL_STACK_SIZE * 2, NULL, tskIDLE_PRIORITY + HANDLE_MANUAL_PRIORITY, NULL);   
   xTaskCreate(Button::Task_HandleStop, "Handle_Buttons", configMINIMAL_STACK_SIZE * 2, NULL, tskIDLE_PRIORITY + HANDLE_STOP_PRIORITY, NULL);   
   xTaskCreate(Task_Upload_Status, "Task_Upload_Status", configMINIMAL_STACK_SIZE * 8, NULL, tskIDLE_PRIORITY + UPLOAD_STATUS_PRIORITY, NULL);
+  xTaskCreate(LCD::Task_LCD, "LCD", configMINIMAL_STACK_SIZE * 8, NULL, tskIDLE_PRIORITY + LCD_PRIORITY, NULL);
+  
   pinMode(RELAY_PIN, OUTPUT);
   digitalWrite(RELAY_PIN, HIGH);
 }
