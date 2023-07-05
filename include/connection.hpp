@@ -5,8 +5,11 @@
 #include <WiFiClientSecure.h>
 
 #include <HTTPClient.h>
+#include "ultrassonic.hpp"
+#include "motorsensing.hpp"
+#include "RTS_settings.h"
 
-#define SEND_INTERVAL_TIME 120 // 2 minutos
+#define SEND_INTERVAL_TIME 1000 // segundos... Coloquei alto pra não ficar usando a cota gratuita lá kkk
 
 // Replace with your network credentials
 extern const char* ssid;
@@ -23,8 +26,8 @@ namespace Connection{
     extern WiFiClientSecure client;
 
     void setup(void);
-    void uploadInfos(float current, 
-                    float temperature,
-                    int level);
+    void uploadInfos(float *current, 
+                    float *temperature,
+                    int *level);
 
 }

@@ -1,7 +1,9 @@
 #include "connection.hpp"
 
-const char* ssid     = "Redmi-Hiago";
-const char* password = "12345670";
+// NOME DA REDE WIFI
+const char* ssid     = "Andre";
+// SEnha da rede wifi
+const char* password = "papagaio";
 
 // supabase credentials
 String API_URL = "https://gxxsgcigwtxtmgnwldep.supabase.co";
@@ -17,37 +19,39 @@ namespace Connection{
         // HTTPS is used without checking credentials 
         client.setInsecure();
 
+        WiFi.begin(ssid, password);
+        #if PRINT_DEBUG
         Serial.print("Connecting to ");
         Serial.println(ssid);
+        #endif
         while (WiFi.status() != WL_CONNECTED){
             delay(500);
+            #if PRINT_DEBUG
             Serial.print(".");
+            #endif
         }
-        
+        #if PRINT_DEBUG
         Serial.println("");
         Serial.println("WiFi connected.");
         Serial.println("IP address: ");
         Serial.println(WiFi.localIP());   
+        #endif
     }
 
-    void uploadInfos(float current, float temperature, int level){
+    void uploadInfos(float *current, float *temperature, int *level){
 
-        if (WiFi.status() == WL_CONNECTED) {
+        // if (WiFi.status() == WL_CONNECTED) {
             // Send the a post request to the server
-            https.begin(client,API_URL+"/rest/v1/"+TableName);
-            https.addHeader("Content-Type", "application/json");
-            https.addHeader("Prefer", "return=representation");
-            https.addHeader("apikey", API_KEY);
-            https.addHeader("Authorization", "Bearer " + API_KEY);
+        https.begin(client,API_URL+"/rest/v1/"+TableName);
+        https.addHeader("Content-Type", "application/json");
+        https.addHeader("Prefer", "return=representation");
+        https.addHeader("apikey", API_KEY);
+        https.addHeader("Authorization", "Bearer " + API_KEY);
 
-            // int httpCode = https.POST("{\"temperature\":" + String(t)+ ",\"humidity\":"+ String(h)+",\"moisture\":" + String(1024 - m)+"}" );   //Send the request
-            int httpCode = https.POST("{\"temperature\":" + String(temperature)+ ",\"corrente\":"+ String(current)+",\"nivel\":" + String(level)+"}" );   //Send the request
-            String payload = https.getString(); 
-            Serial.println(httpCode);   //Print HTTP return code
-            Serial.println(payload);    //Print request response payload
-            https.end();
+        int httpCode = https.POST("{\"temperature\":" + String(*temperature)+ ",\"corrente\":"+ String(*current)+",\"nivel\":" + String(*level)+"}" );   //Send the request
+        https.end();
 
-        }
+        // }
         
     }
     

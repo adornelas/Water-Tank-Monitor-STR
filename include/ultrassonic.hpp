@@ -2,6 +2,7 @@
 
 #include <Arduino.h>
 #include "pins.h"
+#include "RTS_settings.h"
 
 extern SemaphoreHandle_t xMutex_Var_Water;
 
@@ -9,7 +10,7 @@ namespace Ultrassonic{
 
     extern int WaterLevel;
 
-    const int MaxLevel = 13;
+    const int MaxLevel = 15;
 
     void setup();
     void Task_Measure_Water(void *parameters);
@@ -19,4 +20,7 @@ namespace Ultrassonic{
     /// @brief Measure water level based on MaxLevel.
     /// @param water_level pointer to water level variable.
     void measureWaterLevel(int *water_level);
+    /// @brief Measure water level based on MaxLevel.
+    /// @param water_level pointer to water level variable.
+    void getWaterLevel(int *water_level);
 }

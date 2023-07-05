@@ -6,6 +6,7 @@
 #include "pins.h"
 #include <DHT.h>
 #include <DHT_U.h>
+#include "RTS_settings.h"
 
 extern SemaphoreHandle_t xMutex_Var_MotorInfo;
 
@@ -28,6 +29,8 @@ namespace MotorSensing{
     /// @brief Measure Motor's electric current value and temperature
     /// @param motor_info pointer to the struct of motor info
     void measureMotor(motorInfoStruct *motor_info);
+
+    motorInfoStruct getMotorInfoValue();
 }
 
 #endif

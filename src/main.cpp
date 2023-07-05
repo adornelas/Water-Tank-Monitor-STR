@@ -4,7 +4,8 @@
 #include "ultrassonic.hpp"
 #include "pins.h"
 #include "buttons.hpp"
-// #include "connection.hpp"
+#include "connection.hpp"
+#include "RTS_settings.h"
 
 SemaphoreHandle_t xMutex_Var_Water =  NULL;
 SemaphoreHandle_t xMutex_Var_MotorInfo = NULL;
@@ -16,7 +17,6 @@ SemaphoreHandle_t xMutex_SystemState = NULL;
 int WaterLevel;
 MotorSensing::motorInfoStruct motorInfo;
 srcSystem SystemState;
-
 
 MotorSensing::motorInfoStruct GetMotorInfoValue()
 {
@@ -41,103 +41,138 @@ int GetWaterLevel()
   return water_level;
 }
 
+void LigaMotor(){
+  digitalWrite(RELAY_PIN, LOW);
+}
+
+void DesligaMotor(){
+  digitalWrite(RELAY_PIN, HIGH);
+}
+
 void Task_Pump(void *parameters){
-  // MotorSensing::motorInfoStruct motor_info;
-  // int water__level;
   srcSystem stateBuffer;
+  MotorSensing::motorInfoStruct motor_info;
+  int water_level;
+
   while(1)
   {
-    Serial.println(F("Começou task_pump"));
     stateBuffer = Button::GetState();
-    Serial.print(F("     Pegou state: "));    
+    water_level = GetWaterLevel();
+    motor_info =  MotorSensing::getMotorInfoValue();
+    #if PRINT_DEBUG
+    Serial.print("stateBuffer.State ");
     Serial.print(stateBuffer.State);
     Serial.println(stateBuffer.timesPressed);
-    // Le os dados das informações do motor
-    // motor_info = GetMotorInfoValue();
-    // water__level = GetWaterLevel();
-    
-    // Aciona o motor de acordo com o modo de funcionamento
-    //
-    vTaskDelay(2000/portTICK_PERIOD_MS);
-    // digitalWrite(RELAY_PIN, LOW);
+    #endif
 
+    if(stateBuffer.State == STOP_MODE || 
+      motor_info.temperature > 26.0 || 
+      abs(motor_info.current) > 1.0){
+
+        DesligaMotor();
+        
+    }
+    
+    else{
+      if(stateBuffer.State == AUTOMATIC_MODE && water_level > 10){
+        DesligaMotor();
+      }
+
+      if(stateBuffer.State == AUTOMATIC_MODE && 
+        water_level < 10 &&
+        motor_info.temperature < 26.0 &&
+        abs(motor_info.current) < 1.0){
+
+          LigaMotor();
+      }
+      
+      if(stateBuffer.State == MANUAL_MODE && (stateBuffer.timesPressed % 2)){
+          LigaMotor();
+        }
+      // Modo automático, mas apertado um número impar de vezes
+      if(stateBuffer.State == MANUAL_MODE && !(stateBuffer.timesPressed % 2)){
+          DesligaMotor();
+        }
+    }
+    // vTaskGetRunTimeStats(stats);
+    #if STATS_DEBUG
+    Serial.println(stats);
+    #endif
+    vTaskDelay(PUMP_PERIOD/portTICK_PERIOD_MS);
   }
   
 }
 
+void Task_Upload_Status(void *parameters){
+  MotorSensing::motorInfoStruct motor_info;
+  int water_level;
 
-// void Upload_Status(void *parameters){
-//   float current;
-//   float temperature;
-//   int level;
+  while(1){
+    water_level = GetWaterLevel();
 
-//   while(1){
-//     xSemaphoreTake(xMutex_Var_Water,portMAX_DELAY );
-//     level = WaterLevel;
-//     // Releases the Global Variable Mutex
-//     xSemaphoreGive(xMutex_Var_Water);
+    motor_info =  MotorSensing::getMotorInfoValue();
 
-//     xSemaphoreTake(xMutex_Var_MotorInfo,portMAX_DELAY );
-//     current = MotorSensing::motorInfo.current;
-//     temperature = MotorSensing::motorInfo.temperature;
-//     xSemaphoreGive(xMutex_Var_MotorInfo);
+    if(WiFi.status() == WL_CONNECTED){
+      Connection::uploadInfos(&motor_info.current, &motor_info.temperature, &water_level);
+    }
+    else
+    {
+      #if PRINT_DEBUG
+      Serial.println("Desconectado da internet");
+      #endif
+    }
 
-//     Serial.print(F("CONNECTION:"));
-//     Serial.print(F("Current:"));
-//     Serial.print(current);
-
-//     Serial.print(F("CONNECTION:"));
-//     Serial.print(F("level:"));
-//     Serial.print(level);
-
-//     Serial.print(F("CONNECTION:"));
-//     Serial.print(F("temperature:"));
-//     Serial.print(temperature);
-
-//     Connection::uploadInfos(current, temperature, level);
-
-//     vTaskDelay(1000*SEND_INTERVAL_TIME);
-//   }
+    vTaskDelay(UPLOAD_STATUS_PERIOD*SEND_INTERVAL_TIME/portTICK_PERIOD_MS);
+  }
   
-// }
+}
 
 void setup() {
   Serial.begin(115200);
+  #if PRINT_DEBUG
   Serial.printf("\n\rSistema de Monitoramento de Reservatório\n\r");
+  #endif
   
   xMutex_Var_Water = xSemaphoreCreateMutex();
   if(xMutex_Var_Water == NULL)
   {
+    #if PRINT_DEBUG
     Serial.printf("\n\rFalha em criar o Mutex para variavel global de nível de água");
+    #endif
   }
   xMutex_Var_MotorInfo = xSemaphoreCreateMutex();
   if(xMutex_Var_MotorInfo == NULL)
   {
+    #if PRINT_DEBUG
     Serial.printf("\n\rFalha em criar o Mutex para variavel global de informações do motor");
+    #endif
   }
   xMutex_SystemState = xSemaphoreCreateMutex();
   if(xMutex_SystemState == NULL){
-      Serial.printf("\n\rFalha em criar o Mutex para o botão desejado");
+    #if PRINT_DEBUG
+    Serial.printf("\n\rFalha em criar o Mutex para o botão desejado");
+    #endif
   }
 
   MotorSensing::setup();
   Ultrassonic::setup();
   Button::setup();
-  // Connection::setup();
+  Connection::setup();
 
-  xTaskCreate(Ultrassonic::Task_Measure_Water, "Measure_Water", configMINIMAL_STACK_SIZE * 2, NULL, tskIDLE_PRIORITY + 3, NULL);   
-  xTaskCreate(MotorSensing::Task_MeasureMotor, "Measure_MotorInfo", configMINIMAL_STACK_SIZE * 2, NULL, tskIDLE_PRIORITY + 2, NULL);   
-  xTaskCreate(Task_Pump, "Pump", configMINIMAL_STACK_SIZE * 2, NULL, tskIDLE_PRIORITY + 1, NULL);
-  xTaskCreate(Button::Task_HandleAutomatic, "Handle_Buttons", configMINIMAL_STACK_SIZE * 2, NULL, tskIDLE_PRIORITY + 4, NULL);   
-  xTaskCreate(Button::Task_HandleManual, "Handle_Buttons", configMINIMAL_STACK_SIZE * 2, NULL, tskIDLE_PRIORITY + 5, NULL);   
-  xTaskCreate(Button::Task_HandleStop, "Handle_Buttons", configMINIMAL_STACK_SIZE * 2, NULL, tskIDLE_PRIORITY + 6, NULL);   
-  // xTaskCreate(Upload_Status, "Upload_Status", configMINIMAL_STACK_SIZE * 2, NULL, tskIDLE_PRIORITY + 6, NULL);
+  xTaskCreate(Ultrassonic::Task_Measure_Water, "Measure_Water", configMINIMAL_STACK_SIZE * 2, NULL, tskIDLE_PRIORITY + MEASURE_WATER_PRIORITY, NULL);   
+  xTaskCreate(MotorSensing::Task_MeasureMotor, "Measure_MotorInfo", configMINIMAL_STACK_SIZE * 2, NULL, tskIDLE_PRIORITY + MEASURE_MOTOR_PRIORITY, NULL);   
+  xTaskCreate(Task_Pump, "Pump", configMINIMAL_STACK_SIZE * 2, NULL, tskIDLE_PRIORITY + PUMP_PRIORITY, NULL);
+  xTaskCreate(Button::Task_HandleAutomatic, "Handle_Buttons", configMINIMAL_STACK_SIZE * 2, NULL, tskIDLE_PRIORITY + HANDLE_AUTOMATIC_PRIORITY, NULL);   
+  xTaskCreate(Button::Task_HandleManual, "Handle_Buttons", configMINIMAL_STACK_SIZE * 2, NULL, tskIDLE_PRIORITY + HANDLE_MANUAL_PRIORITY, NULL);   
+  xTaskCreate(Button::Task_HandleStop, "Handle_Buttons", configMINIMAL_STACK_SIZE * 2, NULL, tskIDLE_PRIORITY + HANDLE_STOP_PRIORITY, NULL);   
+  xTaskCreate(Task_Upload_Status, "Task_Upload_Status", configMINIMAL_STACK_SIZE * 8, NULL, tskIDLE_PRIORITY + UPLOAD_STATUS_PRIORITY, NULL);
   pinMode(RELAY_PIN, OUTPUT);
   digitalWrite(RELAY_PIN, HIGH);
-
 }
 
 void loop() {
+  #if PRINT_DEBUG
   Serial.printf("\n\rSupende tarefa LOOP");
+  #endif
   vTaskSuspend(NULL);
 }
