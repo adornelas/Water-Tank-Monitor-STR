@@ -20,18 +20,6 @@ int WaterLevel;
 MotorSensing::motorInfoStruct motorInfo;
 srcSystem SystemState;
 
-MotorSensing::motorInfoStruct GetMotorInfoValue()
-{
-  MotorSensing::motorInfoStruct info_struct;
-  // Obtains the Global Variable Mutex
-  xSemaphoreTake(xMutex_Var_MotorInfo,portMAX_DELAY );
-  info_struct.current = motorInfo.current;
-  info_struct.temperature =  motorInfo.temperature ;
-  // Releases the Global Variable Mutex
-  xSemaphoreGive(xMutex_Var_MotorInfo);
-  return info_struct;
-}
-
 void LigaMotor(){
   digitalWrite(RELAY_PIN, LOW);
 }
