@@ -1,6 +1,4 @@
-# Water-Tank-Monitor-STR# CALC-IA-32
-
-Equipe:
+# Water-Tank-Monitor-STR
 
 O projeto Water Tank Monitor é um trabalho feito para a disciplina de Sistemas em Tempo Real na Universidade de Brasília. 
 
