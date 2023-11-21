@@ -1,8 +1,8 @@
 #pragma once
 
 #include <Arduino.h>
-#include "pins.h"
-#include "RTS_settings.h"
+#include "../../include/pins.h"
+#include "../../include/RTS_settings.h"
 
 extern SemaphoreHandle_t xMutex_Var_Water;
 

@@ -7,8 +7,8 @@
 #define STOP_MODE "S"
 
 #include <Arduino.h>
-#include "pins.h"
-#include "RTS_settings.h"
+#include "../../include/pins.h"
+#include "../../include/RTS_settings.h"
 
 extern SemaphoreHandle_t xSemaphore_ManualButton;
 extern SemaphoreHandle_t xSemaphore_AutomaticButton;

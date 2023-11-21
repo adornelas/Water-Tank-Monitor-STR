@@ -1,5 +1,4 @@
 #include "buttons.hpp"
-#include "pins.h"
 
 BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 
