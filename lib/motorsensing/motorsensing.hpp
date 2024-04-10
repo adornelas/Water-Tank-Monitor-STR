@@ -3,10 +3,10 @@
 
 #include <Arduino.h>
 #include "ACS712.h"
-#include "pins.h"
 #include <DHT.h>
 #include <DHT_U.h>
-#include "RTS_settings.h"
+#include "../../include/pins.h"
+#include "../../include/RTS_settings.h"
 
 extern SemaphoreHandle_t xMutex_Var_MotorInfo;
 

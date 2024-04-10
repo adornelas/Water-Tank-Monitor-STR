@@ -3,8 +3,8 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
-#include "pins.h"
-#include "RTS_settings.h"
+#include "../../include/pins.h"
+#include "../../include/RTS_settings.h"
 #include "ultrassonic.hpp"
 #include "motorsensing.hpp"
 #include "buttons.hpp"
